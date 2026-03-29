@@ -15,6 +15,7 @@
         - id
         - date
         - titre
+        - photoCouverture
         - contenu
         - url (a generer dans la classe)
         - Fonctions:

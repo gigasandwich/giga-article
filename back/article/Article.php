@@ -3,14 +3,16 @@ class Article {
     private $id = null;
     private $title = null;
     private $url = null;
+    private $cover = null;
     private $content = null;
     private $date = null;
 
-    public function __construct($id, $title, $url, $content, $date) {
+    public function __construct($id, $title, $url, $cover, $content, $date) {
         try {
             $this->setId($id);
             $this->setTitle($title);
             $this->setUrl($url);
+            $this->setCover($cover);
             $this->setContent($content);
             $this->setDate($date);
         } catch (InvalidArgumentException $e) {
@@ -34,6 +36,10 @@ class Article {
 
     public function getContent() {
         return $this->content;
+    }
+
+    public function getCover() {
+        return $this->cover;
     }
 
     public function getDate() {
@@ -61,6 +67,13 @@ class Article {
         }
         $this->url = $url;
     }
+    
+    public function setCover($cover) {
+        if(!is_string($cover)) {
+            throw new InvalidArgumentException("Cover must be a string.");
+        }
+        $this->cover = $cover;
+    }
 
     public function setContent($content) {
         if(!is_string($content)) {
@@ -75,5 +88,7 @@ class Article {
         }
         $this->date = $date;
     }
+
+    // Fonction
 
 }
