@@ -14,8 +14,9 @@ try {
     echo "Cover: " . $article->getCover() . "\n";
     echo "Content: " . $article->getContent() . "\n";
     echo "Created At: " . $article->getCreatedAt() . "\n";
+    echo "Generated URL: " . $article->createUrl() . "\n";
 
-    $article->saveArticle($pdo);
+    // $article->saveArticle($pdo);
 } catch (InvalidArgumentException $e) {
     echo "Error creating article: " . $e->getMessage();
 }

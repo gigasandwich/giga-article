@@ -103,4 +103,11 @@ class Article {
             echo "Error saving article: " . $e->getMessage();
         }
     }
+
+    public function createUrl() {
+        $date = str_replace('-', '/', $this->getCreatedAt());
+        $title = str_replace(' ', '-', $this->getTitle());
+        $url = '/article/'. $date . '/' . strtolower($title) . '_' . $this->getId() . '.html';
+        return $url;
+    }
 }
