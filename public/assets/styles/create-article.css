@@ -1,0 +1,57 @@
+form{
+	max-width:920px;
+	margin:0 auto;
+	background:#fff;
+	padding:18px;
+	border-radius:10px;
+	box-shadow:0 6px 20px rgba(16,24,40,0.06);
+}
+
+form > div{
+	margin-bottom:14px;
+}
+
+label{
+	display:block;
+	font-weight:600;
+	margin-bottom:6px;
+	color:#0f172a;
+}
+
+input[type="text"],
+input[type="date"],
+textarea,
+input[type="file"]{
+	width:100%;
+	padding:10px 12px;
+	border:1px solid #e6e9ee;
+	border-radius:8px;
+	font-size:1rem;
+	background:#fff;
+	box-sizing:border-box;
+}
+
+textarea{min-height:220px; resize:vertical}
+
+/* Helper text for file input */
+small#image-help{display:block;color:#556070;margin-top:6px;font-size:.9rem}
+
+#submit-button{
+	display:inline-block;
+	background:#0b63b7;
+	color:#fff;
+	border:0;
+	padding:10px 16px;
+	border-radius:8px;
+	font-weight:700;
+	cursor:pointer;
+}
+#submit-button:hover{background:#09549a}
+
+input:focus, textarea:focus, #submit-button:focus{
+	outline:3px solid rgba(11,99,183,0.18);
+	outline-offset:2px;
+}
+
+
+.tox, .tox-editor-container{max-width:100%;border-radius:8px}
