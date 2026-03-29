@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    Backoffice
+    <a href="articles/create.php">Creation d'article</a>
 </body>
 </html>
