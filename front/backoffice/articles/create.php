@@ -40,6 +40,7 @@
                 plugins: [
                     // Core editing features
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                    'image',
                     // Your account includes a free trial of TinyMCE premium features
                     // Try the most popular premium features until Apr 11, 2026:
                     // 'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
@@ -53,6 +54,37 @@
                 // ],
                 // ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
                 // uploadcare_public_key: 'f3720f25f8e5b4607db2',
+
+                automatic_uploads: true,
+                images_upload_url: '/back/dummy-upload.php',
+
+                file_picker_types: 'image',
+
+                file_picker_callback: (callback, value, meta) => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+
+                    input.onchange = function () {
+                        const file = this.files[0];
+
+                        const formData = new FormData();
+                        formData.append('file', file);
+
+                        fetch('/back/dummy-upload.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            callback(data.location);
+                        })
+                        .catch(err => console.error(err));
+                    };
+
+                    input.click();
+                }
+
             });
 
             const submitButton = document.getElementById("submit-button");
