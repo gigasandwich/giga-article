@@ -6,4 +6,5 @@ services:
       - "1234:80"
     volumes:
       - ./:/var/www/html:cached
+    command: sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader || true && apache2-foreground"
     restart: no
