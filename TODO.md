@@ -18,8 +18,8 @@
         - contenu
         - url (a generer dans la classe)
         - Fonctions:
-            1. Article creationArcticle()
-                - Controle donnee
+            1. [ok]Article creationArcticle()
+                - [ok]Controle donnee
             2. Article persistenceArcticle()
                 - persistePhoto()
             3. String genererUrl()
