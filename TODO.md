@@ -25,7 +25,7 @@
                 - persistePhoto()
             3. [ok]String genererUrl()
                 - url ex: https://www.lemonde.fr/international/article/2026/03/29/sur-l-immigration-l-espagne-avance-a-contre-courant-de-ses-voisins-europeens_6675201_3210.html
-            4. Article persisterUrl()
+            4. [ok]Article persisterUrl()
     - Upload photos
 
 - Read articles

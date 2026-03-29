@@ -62,7 +62,7 @@ class Article {
     }
 
     public function setUrl($url) {
-        if(!is_string($url) || empty($url)) {
+        if(!is_string($url)) {
             throw new InvalidArgumentException("URL must be a non-empty string.");
         }
         $this->url = $url;
@@ -99,6 +99,7 @@ class Article {
             $stmt->bindValue(':content', $this->getContent());
             $stmt->bindValue(':created_at', $this->getCreatedAt());
             $stmt->execute();
+            $this->setId((int)$pdo->lastInsertId());
         } catch (PDOException $e) {
             echo "Error saving article: " . $e->getMessage();
         }
@@ -111,4 +112,15 @@ class Article {
         $this->setUrl($url);
         return $url;
     }
+
+    public function saveUrl(PDO $pdo) {
+        try {
+            $stmt = $pdo->prepare("UPDATE article SET url = :url WHERE id = :id");
+            $stmt->bindValue(':url', $this->getUrl());
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error saving URL: " . $e->getMessage();
+        }
+    } 
 }
