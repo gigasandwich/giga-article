@@ -5,7 +5,7 @@ class Article {
     private $url = null;
     private $cover = null;
     private $content = null;
-    private $date = null;
+    private $createdAt = null;
 
     public function __construct($id, $title, $url, $cover, $content, $date) {
         try {
@@ -14,7 +14,7 @@ class Article {
             $this->setUrl($url);
             $this->setCover($cover);
             $this->setContent($content);
-            $this->setDate($date);
+            $this->setCreatedAt($date);
         } catch (InvalidArgumentException $e) {
             // Handle the exception as needed, e.g., log it or rethrow
             throw $e;
@@ -42,8 +42,8 @@ class Article {
         return $this->cover;
     }
 
-    public function getDate() {
-        return $this->date;
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     // setters
@@ -82,11 +82,11 @@ class Article {
         $this->content = $content;
     }
 
-    public function setDate($date) {
-        if(!is_string($date)) {
-            throw new InvalidArgumentException("Date must be a string.");
+    public function setCreatedAt($createdAt) {
+        if(!is_string($createdAt)) {
+            throw new InvalidArgumentException("Created At must be a string.");
         }
-        $this->date = $date;
+        $this->createdAt = $createdAt;
     }
 
     // Fonction
