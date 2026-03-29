@@ -1,8 +1,3 @@
-\c postgres;
-DROP DATABASE IF EXISTS 'giga_article';
-CREATE DATABASE 'giga_article';
-\c giga_article;
-
 CREATE TABLE article(
    id SERIAL,
    title TEXT NOT NULL,
