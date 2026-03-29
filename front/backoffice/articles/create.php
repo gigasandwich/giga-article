@@ -18,7 +18,7 @@
         <form action="">
             <div>
                 <label for="title">Titre</label>
-                <input type="text" name="title" id="title">
+                <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
             </div>
 
             <div>
@@ -89,6 +89,16 @@
                 }
 
             });
+
+            // Default date: now
+            const dateInput = document.getElementById('date');
+            if (dateInput && !dateInput.value) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
 
             const submitButton = document.getElementById("submit-button");
             submitButton.addEventListener("click", function(event) {
