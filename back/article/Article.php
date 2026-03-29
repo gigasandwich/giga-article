@@ -108,6 +108,7 @@ class Article {
         $date = str_replace('-', '/', $this->getCreatedAt());
         $title = str_replace(' ', '-', $this->getTitle());
         $url = '/article/'. $date . '/' . strtolower($title) . '_' . $this->getId() . '.html';
+        $this->setUrl($url);
         return $url;
     }
 }
