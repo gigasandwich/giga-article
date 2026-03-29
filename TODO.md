@@ -21,7 +21,7 @@
         - Fonctions:
             1. [ok]Article creationArcticle()
                 - [ok]Controle donnee
-            2. Article persistenceArcticle()
+            2. [ok]Article persistenceArcticle()
                 - persistePhoto()
             3. String genererUrl()
             4. Article persisterUrl()

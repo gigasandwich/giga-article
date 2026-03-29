@@ -90,5 +90,17 @@ class Article {
     }
 
     // Fonction
-
+    public function saveArticle(PDO $pdo) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO article (title, url, cover, content, created_at) VALUES (:title, :url, :cover, :content, :created_at)");
+            $stmt->bindValue(':title', $this->getTitle());
+            $stmt->bindValue(':url', $this->getUrl());
+            $stmt->bindValue(':cover', $this->getCover());
+            $stmt->bindValue(':content', $this->getContent());
+            $stmt->bindValue(':created_at', $this->getCreatedAt());
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error saving article: " . $e->getMessage();
+        }
+    }
 }
