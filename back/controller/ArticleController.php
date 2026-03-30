@@ -13,7 +13,7 @@ function postArticle() {
         $title = isset($_POST['title']) ? trim($_POST['title']) : '';
         $date = isset($_POST['date']) ? trim($_POST['date']) : '';
         $content = isset($_POST['content']) ? trim($_POST['content']) : '';
-        $cover = isset($_POST['cover']) ? trim($_POST['cover']) : '';
+        $cover = isset($_POST['cover']) ? trim($_POST['cover']) : null;
 
         if ($title === '' || $date === '' || $content === '') {
             http_response_code(422);

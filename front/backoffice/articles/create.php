@@ -39,6 +39,8 @@
     </div>
 
     <script>
+        const backUploadUrl = "/back/Upload.php";
+
         document.addEventListener("DOMContentLoaded", function() {
             tinymce.init({
                 selector: '#content',
@@ -62,7 +64,7 @@
                 // uploadcare_public_key: 'f3720f25f8e5b4607db2',
 
                 automatic_uploads: true,
-                images_upload_url: '/back/dummy-upload.php',
+                images_upload_url: backUploadUrl,
 
                 file_picker_types: 'image',
 
@@ -76,8 +78,10 @@
 
                         const formData = new FormData();
                         formData.append('file', file);
+                        formData.append('title', document.getElementById('title').value);
+                        formData.append('date', document.getElementById('date').value);
 
-                        fetch('/back/dummy-upload.php', {
+                        fetch(backUploadUrl, {
                             method: 'POST',
                             body: formData
                         })

@@ -70,7 +70,9 @@ class Article {
     
     public function setCover($cover) {
         if(!is_string($cover)) {
-            throw new InvalidArgumentException("Cover must be a string.");
+            if ($cover !== null) { // Allow null for cover
+                throw new InvalidArgumentException("Cover must be a string or null.");
+            }
         }
         $this->cover = $cover;
     }
