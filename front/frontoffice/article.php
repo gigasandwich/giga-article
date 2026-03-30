@@ -14,9 +14,10 @@ if (!$article) {
     die("<h1>404 - Article introuvable</h1>");
 }
 
-// 3. Notre fonction de "nettoyage" et d'extraction vue recemment
-function getCleanArticleParts(string $html) {
-    if (empty($html)) return ['chapeau' => '', 'body' => ''];
+// 3. Notre fonction de "nettoyage" et d'extraction
+// On a ajoute $coverUrl en parametre pour savoir quelle image chercher
+function getCleanArticleParts(string $html, string $coverUrl) {
+    if (empty($html)) return ['chapeau' => '', 'body' => '', 'coverAlt' => ''];
 
     $doc = new DOMDocument();
     libxml_use_internal_errors(true);
@@ -32,7 +33,27 @@ function getCleanArticleParts(string $html) {
         $h1->parentNode->removeChild($h1);
     }
 
-    // B. Extraire le "Chapeau" (courte description)
+    // B.1 Extraire l'attribut alt de l'image de couverture (et la supprimer du HTML)
+    $images = $doc->getElementsByTagName('img');
+    $coverAlt = '';
+    
+    // On va chercher le nom du fichier de couverture (en enlevant les dossiers devant)
+    $coverFileName = basename($coverUrl); 
+    
+    // On doit parcourir le NodeList a l'envers quand on veut supprimer des elements, 
+    // sinon les index de la liste changent et on en "rate" la moitie
+    for ($i = $images->length - 1; $i >= 0; $i--) {
+        $img = $images->item($i);
+        $src = $img->getAttribute('src');
+        
+        // Si le src de l'image dans le texte contient le nom de notre cover...
+        if (strpos($src, $coverFileName) !== false && $coverFileName !== '') {
+            $coverAlt = $img->getAttribute('alt');
+            $img->parentNode->removeChild($img);
+        }
+    }
+
+    // B.2 Extraire le "Chapeau" (courte description)
     // On suppose que la description est dans le tout premier <h3> ou le tout premier paragraphe important
     $chapeau = '';
     $h3s = $doc->getElementsByTagName('h3');
@@ -62,11 +83,13 @@ function getCleanArticleParts(string $html) {
 
     return [
         'chapeau' => trim($chapeau),
-        'body' => trim($bodyHtml)
+        'body' => trim($bodyHtml),
+        'coverAlt' => trim($coverAlt)
     ];
 }
 
-$parts = getCleanArticleParts($article->getContent());
+// On passe maintenant l'URL de la cover en 2eme parametre !
+$parts = getCleanArticleParts($article->getContent(), $article->getCover()); 
 
 // Formatage de la date à la francaise
 $dateObj = new DateTime($article->getCreatedAt());
@@ -203,8 +226,15 @@ $dateFormatee = $dateObj->format('d/m/Y à H:i');
         <?php if ($article->getCover()): ?>
         <figure class="article-cover">
             <!-- On s'assure d'ajouter le / devant uploads/ pour partir de la racine du site -->
-            <img src="/<?= htmlspecialchars($article->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Couverture de l'article">
-            <figcaption>Illustration liée à l'article. © Giga News</figcaption>
+            <img src="/<?= htmlspecialchars($article->getCover(), ENT_QUOTES, 'UTF-8') ?>" 
+                 alt="<?= htmlspecialchars(!empty($parts['coverAlt']) ? $parts['coverAlt'] : "Couverture de l'article") ?>">
+            <figcaption>
+                <?php if (!empty($parts['coverAlt'])): ?>
+                    <?= htmlspecialchars($parts['coverAlt']) ?>. © Giga News
+                <?php else: ?>
+                    Illustration liée à l'article. © Giga News
+                <?php endif; ?>
+            </figcaption>
         </figure>
         <?php endif; ?>
 
