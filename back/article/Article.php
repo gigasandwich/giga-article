@@ -89,7 +89,21 @@ class Article {
         $this->createdAt = $createdAt;
     }
 
-    // Fonction
+    // Fonctions
+    public static function getAll(PDO $pdo) {
+        try {
+            $stmt = $pdo->query("SELECT * FROM article");
+            $articles = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
+            }
+            return $articles;
+        } catch (PDOException $e) {
+            echo "Error fetching articles: " . $e->getMessage();
+            return [];
+        }
+    }
+
     public function saveArticle(PDO $pdo) {
         try {
             $stmt = $pdo->prepare("INSERT INTO article (title, url, cover, content, created_at) VALUES (:title, :url, :cover, :content, :created_at)");
