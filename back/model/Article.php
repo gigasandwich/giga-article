@@ -179,10 +179,8 @@ class Article {
         try {
             // 1. On recupere toutes les images liees a cet article
             $images = $this->getArticleImages($level);
-            echo "Images found for article '" . $this->getTitle() . "':\n";
-            foreach ($images as $img) {
-                echo "- " . $img . "\n";
-            }
+            $inserted = 0;
+            $skippedCover = 0;
             
             // 2. On prepare la requete d'insertion dans la table picture
             $stmt = $pdo->prepare("INSERT INTO picture (url, article_id) VALUES (:url, :article_id) ON CONFLICT (url) DO NOTHING");
@@ -194,10 +192,24 @@ class Article {
                     $stmt->bindValue(':url', $imageUrl);
                     $stmt->bindValue(':article_id', $this->getId(), PDO::PARAM_INT);
                     $stmt->execute();
+                    $inserted += $stmt->rowCount();
+                } else {
+                    $skippedCover++;
                 }
             }
+
+            return [
+                'images_found' => $images,
+                'inserted' => $inserted,
+                'skipped_cover' => $skippedCover
+            ];
         } catch (PDOException $e) {
-            echo "Error saving pictures: " . $e->getMessage();
+            return [
+                'images_found' => [],
+                'inserted' => 0,
+                'skipped_cover' => 0,
+                'error' => $e->getMessage()
+            ];
         }
     }
 }

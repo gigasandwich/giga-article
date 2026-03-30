@@ -32,11 +32,10 @@ function postArticle() {
                 $extension = strtolower(pathinfo($oldName, PATHINFO_EXTENSION));
                 $titlePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $title);
                 $datePropre = str_replace('-', '', $date);
-                $newName = $titlePropre . '_' . $datePropre . '_' . uniqid() . '.' . $extension;
+                $newName = strtolower($titlePropre . '_' . $datePropre . '_' . uniqid() . '.' . $extension);
                 $newPath = $uploadsDir . '/' . $newName;
 
                 if (rename($oldPath, $newPath)) {
-                    // TODO: only change img.src=
                     // Update content with new path, but only inside img src
                     $escapedOldName = preg_quote($oldName, '/');
                     $content = preg_replace(
@@ -58,6 +57,7 @@ function postArticle() {
         $article->saveArticle($pdo);
         $article->createUrl();
         $article->saveUrl($pdo);
+        $picturesDebug = $article->savePictures($pdo, '../..');
 
         // Clear session after successful creation
         unset($_SESSION['article']);
@@ -67,7 +67,8 @@ function postArticle() {
             'success' => true,
             'id' => $article->getId(),
             'url' => $article->getUrl(),
-            'photos' => $finalPhotoPaths
+            'photos' => $finalPhotoPaths,
+            'pictures_debug' => $picturesDebug
         ]);
     } catch (RuntimeException $e) {
         $status = $e->getCode() !== 0 ? $e->getCode() : 500;
