@@ -2,6 +2,8 @@
 session_start();
 require_once '../db/Connection.php';
 require_once '../model/Article.php';
+require_once 'PhotoUploadController.php';
+
 
 function postArticle() {
     try {
@@ -14,7 +16,23 @@ function postArticle() {
         $title = isset($_POST['title']) ? trim($_POST['title']) : '';
         $date = isset($_POST['date']) ? trim($_POST['date']) : '';
         $content = isset($_POST['content']) ? trim($_POST['content']) : '';
-        $cover = isset($_POST['cover']) ? trim($_POST['cover']) : null;
+        
+        $coverPath = null;
+        if (isset($_FILES['cover']) && $_FILES['cover']['error'] === UPLOAD_ERR_OK) {
+            $uploadResult = uploadImages($_FILES['cover'], '../..', $title, $date);
+            if ($uploadResult['success']) {
+                $oldPath = '../../' . $uploadResult['location'];
+                $extension = strtolower(pathinfo($oldPath, PATHINFO_EXTENSION));
+                $titlePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $title);
+                $datePropre = str_replace('-', '', $date);
+                $newCoverName = 'cover-' . $titlePropre . '_' . $datePropre . '_' . uniqid() . '.' . $extension;
+                $newCoverPathFull = '../../uploads/' . $newCoverName;
+                
+                if (rename($oldPath, $newCoverPathFull)) {
+                    $coverPath = 'uploads/' . $newCoverName;
+                }
+            }
+        }
 
         if ($title === '' || $date === '' || $content === '') {
             throw new RuntimeException("Missing required fields", 422);
@@ -54,7 +72,7 @@ function postArticle() {
             throw new RuntimeException("Database connection failed", 500);
         }
 
-        $article = new Article(1, $title, '', $cover, $content, $date);
+        $article = new Article(1, $title, '', $coverPath, $content, $date);
         $article->saveArticle($pdo);
         $article->createUrl();
         $article->saveUrl($pdo);
