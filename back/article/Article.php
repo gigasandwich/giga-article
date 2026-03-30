@@ -123,4 +123,39 @@ class Article {
             echo "Error saving URL: " . $e->getMessage();
         }
     } 
+
+    public function getArticleImages($level) {
+        // 1. Recreer la base du nom propre (titrePropre_datePropre)
+        $titrePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $this->getTitle());
+        $datePropre = str_replace('-', '', $this->getCreatedAt());
+        $nomDeBase = $titrePropre . '_' . $datePropre;
+
+        // 2. Determiner le chemin du dossier uploads
+        $dossierUploads = $level . '/uploads';
+
+        // Tableau pour stocker les images trouvees
+        $imagesTrouvees = [];
+
+        // 3. Verifier si le dossier existe
+        if (is_dir($dossierUploads)) {
+            // Scanner tous les fichiers du dossier
+            $fichiers = scandir($dossierUploads);
+
+            foreach ($fichiers as $fichier) {
+                // Ignorer les dossiers speciaux . et ..
+                if ($fichier === '.' || $fichier === '..') {
+                    continue;
+                }
+
+                // 4. Verifier si le nom du fichier COMMENCE PAR notre nom de base
+                // ex: si nomDeBase est "Mon-Titre_20260330", ca matchera "Mon-Titre_20260330_64f1.jpg"
+                if (strpos($fichier, $nomDeBase) === 0) {
+                    // Ajouter le chemin relatif (propre pour le frontend) au tableau
+                    $imagesTrouvees[] = 'uploads/' . $fichier;
+                }
+            }
+        }
+
+        return $imagesTrouvees;
+    }
 }
