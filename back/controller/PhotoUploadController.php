@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dateCreation = $_POST['date'];
     $fichierImage = $_FILES['file'];
 
-    $result = uploadImages($fichierImage, '..', $titreArticle, $dateCreation);
+    $result = uploadImages($fichierImage, '../..', $titreArticle, $dateCreation);
     header('Content-Type: application/json');
     echo json_encode($result);
 }
