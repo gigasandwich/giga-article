@@ -142,7 +142,7 @@ class Article {
         // 1. Recreer la base du nom propre (titrePropre_datePropre)
         $titrePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $this->getTitle());
         $datePropre = str_replace('-', '', $this->getCreatedAt());
-        $nomDeBase = $titrePropre . '_' . $datePropre;
+        $nomDeBase = strtolower($titrePropre . '_' . $datePropre);
 
         // 2. Determiner le chemin du dossier uploads
         $dossierUploads = $level . '/uploads';
@@ -177,6 +177,10 @@ class Article {
         try {
             // 1. On recupere toutes les images liees a cet article
             $images = $this->getArticleImages($level);
+            echo "Images found for article '" . $this->getTitle() . "':\n";
+            foreach ($images as $img) {
+                echo "- " . $img . "\n";
+            }
             
             // 2. On prepare la requete d'insertion dans la table picture
             $stmt = $pdo->prepare("INSERT INTO picture (url, article_id) VALUES (:url, :article_id) ON CONFLICT (url) DO NOTHING");

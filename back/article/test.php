@@ -17,6 +17,7 @@ try {
     // $article->saveArticle($pdo);
     // echo "URL: " . $article->createUrl() . "\n";
     // $article->saveUrl($pdo);
+    $article->savePictures($pdo, '../..');
 } catch (InvalidArgumentException $e) {
     echo "Error creating article: " . $e->getMessage();
 }
