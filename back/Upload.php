@@ -1,6 +1,6 @@
 <?php
 
-function uploadImages($temporaryFile, $destinationFinal, $title, $date) {
+function uploadImages($temporaryFile, $level, $title, $date) {
     // 1. Verifier s'il y a eu une erreur lors de l'upload
     if ($temporaryFile['error'] !== UPLOAD_ERR_OK) {
         return ["success" => false, "message" => "Erreur lors de l'envoi du fichier."];
@@ -30,6 +30,8 @@ function uploadImages($temporaryFile, $destinationFinal, $title, $date) {
     // Format final : titre-propre_datepropre_idunique.jpg
     $nouveauNomFichier = $titrePropre . '_' . $datePropre . '_' . uniqid() . '.' . $extensionFichier;
 
+    $uploadFile = 'uploads';
+    $destinationFinal = $level . '/' . $uploadFile;
     // 5. Creer le dossier de destination s'il n'existe pas encore
     if (!is_dir($destinationFinal)) {
          mkdir($destinationFinal, 0755, true);
@@ -40,7 +42,7 @@ function uploadImages($temporaryFile, $destinationFinal, $title, $date) {
 
     // 7. On deplace le fichier
     if (move_uploaded_file($temporaryFile['tmp_name'], $cheminComplet)) {
-        return ["success" => true, "location" => $cheminComplet];
+        return ["success" => true, "location" => $uploadFile . '/' . $nouveauNomFichier];
     } else {
         return ["success" => false, "message" => "Erreur lors de la sauvegarde sur le serveur."];
     }

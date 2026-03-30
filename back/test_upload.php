@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // 3. On appelle notre fonction uploadImages !
     // On doit remonter d'un dossier (..) pour acceder au dossier 'uploads' a la racine
-    $resultat = uploadImages($fichierImage, '../uploads', $titreArticle, $dateCreation);
+    $resultat = uploadImages($fichierImage, '..', $titreArticle, $dateCreation);
     
     // 4. On affiche le resultat
     if ($resultat['success'] === true) {
