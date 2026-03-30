@@ -13,11 +13,10 @@
         <link rel="stylesheet" href="/public/assets/styles/auth.css">
 </head>
 <body>
-    
-</body>
-<div class="auth-wrapper">
-    <main class="auth-card" role="main">
-        <p class="lead">Connectez vous au back office</p>
+    <?php include "../../component/header.php"; ?>
+    <div class="auth-wrapper">
+        <main class="auth-card" role="main">
+            <p class="lead">Connectez vous au back office</p>
         <?php if (isset($error) && !empty($error)): ?>
             <div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>

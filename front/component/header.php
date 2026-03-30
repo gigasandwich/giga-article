@@ -23,6 +23,12 @@
         text-align: center;
     }
 
+    .header-logo a {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
     .header-date {
         font-size: 0.85rem;
         font-weight: 500;
@@ -33,6 +39,34 @@
     .header-date small {
         color: #999;
         font-size: 0.75rem;
+    }
+
+    .header-user {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .user-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background-color: #333;
+        color: #fff;
+        border-radius: 50%;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+    .user-icon:hover {
+        background-color: #444;
+    }
+
+    .user-icon svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
     }
 
     .filter-bar {
@@ -133,9 +167,15 @@
             <small><?= (new DateTime())->format('g:i a') ?></small>
         </div>
         <div class="header-logo">
-            GigaArticle
+            <a href="/front/frontoffice/">GigaArticle</a>
         </div>
-        <div class="header-spacer"></div>
+        <div class="header-user">
+            <a href="/front/backoffice/auth/login.php" class="user-icon" title="Accéder au Back Office">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10,10-4.48,10-10S17.52,2,12,2Zm0,3c1.66,0,3,1.34,3,3s-1.34,3-3,3-3-1.34-3-3,1.34-3,3-3Zm0,14.2c-2.5,0-4.71-1.28-6-3.22.03-1.99,4-3.08,6-3.08,1.99,0,5.97,1.09,6,3.08-1.29,1.94-3.5,3.22-6,3.22Z"/>
+                </svg>
+            </a>
+        </div>
     </div>
 </header>
 <div class="filter-bar">
