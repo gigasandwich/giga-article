@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
-require __DIR__ . '/../db/connection.php';
+require __DIR__ . '/../Connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /front/backoffice/auth/login.php');

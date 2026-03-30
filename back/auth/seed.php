@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__ . '/../../vendor/autoload.php';
-require __DIR__ . '/../db/connection.php';
+require __DIR__ . '/../Connection.php';
 
 use Delight\Auth\Auth;
 
