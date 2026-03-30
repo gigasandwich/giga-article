@@ -1,4 +1,7 @@
 <?php
+require_once "../../back/model/Article.php";
+require_once "../../back/db/Connection.php";
+
 /**
  * HTML to raw string for the article body (img becomes alt)
  */
@@ -28,23 +31,7 @@ function parse_excerpt_html(string $html): string {
     return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$articles = [];
-for ($i = 1; $i <= 5; $i++) {
-    $imageUrl = "https://picsum.photos/seed/article{$i}/440/264";
-    $inlineImage = "https://picsum.photos/seed/inline{$i}/120/80";
-    $htmlExcerpt = "
-        <p>Lorem ipsum <strong>dolor sit amet</strong>, consectetur adipisicing elit. <img src='{$inlineImage}' alt='This is from alt tag' /></p>
-        <p>Quisquam, quidem. Voluptas, voluptate.</p>
-        <p>Ratataatatatataaaaaaaaaaaaaaaaaaaaaaaaaa Ratataatatatataaaaaaaaaaaaaaaaaaaaaaaaaa Ratataatatatataaaaaaaaaaaaaaaaaaaaaaaaaa Ratataatatatataaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-    ";
-
-    $articles[] = [
-        'title' => "Article $i",
-        'date' => date('Y-m-d', strtotime("-{$i} days")),
-        'image' => $imageUrl,
-        'excerpt' => $htmlExcerpt
-    ];
-}
+$articles = Article::getAll($pdo);
 ?>
 
 <!DOCTYPE html>
@@ -65,12 +52,12 @@ for ($i = 1; $i <= 5; $i++) {
                 <li>
                     <article class="news-article">
                         <div class="thumb">
-                            <img src="<?= htmlspecialchars($a['image'], ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a['title'], ENT_QUOTES, 'UTF-8') ?>">
+                            <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
                         </div>
                         <div class="news-content">
-                            <h2 class="news-title"><?= htmlspecialchars($a['title'], ENT_QUOTES, 'UTF-8') ?></h2>
-                            <time class="news-date" datetime="<?= htmlspecialchars($a['date'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a['date'], ENT_QUOTES, 'UTF-8') ?></time>
-                            <div class="news-body"><?= parse_excerpt_html($a['excerpt']) ?></div>
+                            <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
+                            <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
+                            <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
                         </div>
                     </article>
                 </li>
