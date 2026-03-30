@@ -1,6 +1,6 @@
 <?php
 
-function uploadImages($temporaryFile, $destinationFinal) {
+function uploadImages($temporaryFile, $destinationFinal, $title, $date) {
     // 1. Verifier s'il y a eu une erreur lors de l'upload
     if ($temporaryFile['error'] !== UPLOAD_ERR_OK) {
         return ["success" => false, "message" => "Erreur lors de l'envoi du fichier."];
@@ -21,9 +21,14 @@ function uploadImages($temporaryFile, $destinationFinal) {
         return ["success" => false, "message" => "Format de fichier non autorise. Images uniquement."];
     }
 
-    // 4. Renommer le fichier pour eviter les doublons et les problemes de caracteres speciaux
-    // uniqid() genere un identifiant unique (ex: img_64f1a2b3c4d5.jpg)
-    $nouveauNomFichier = uniqid('img_') . '.' . $extensionFichier;
+    // 4. Renommer le fichier avec le titre, la date et un identifiant unique
+    // Pour la securite, on enleve tous les caracteres speciaux et les espaces du titre
+    $titrePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $title); 
+    // On enleve les tirets de la date (ex: 2026-03-30 devient 20260330)
+    $datePropre = str_replace('-', '', $date);
+    
+    // Format final : titre-propre_datepropre_idunique.jpg
+    $nouveauNomFichier = $titrePropre . '_' . $datePropre . '_' . uniqid() . '.' . $extensionFichier;
 
     // 5. Creer le dossier de destination s'il n'existe pas encore
     if (!is_dir($destinationFinal)) {
