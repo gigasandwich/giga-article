@@ -4,13 +4,13 @@ session_start();
 function uploadImages($temporaryFile, $level, $title, $date) {
     // 1. Verifier s'il y a eu une erreur lors de l'upload
     if ($temporaryFile['error'] !== UPLOAD_ERR_OK) {
-        return ["success" => false, "message" => "Erreur lors de l'envoi du fichier."];
+        throw new RuntimeException("Erreur lors de l'envoi du fichier.", 400);
     }
 
     // 2. Verifier la taille du fichier (ex: limite a 5 Mo)
     $tailleMax = 5 * 1024 * 1024; // 5 Mo en octets
     if ($temporaryFile['size'] > $tailleMax) {
-        return ["success" => false, "message" => "Le fichier est trop volumineux (max 5 Mo)."];
+        throw new RuntimeException("Le fichier est trop volumineux (max 5 Mo).", 413);
     }
 
     // 3. Verifier l'extension du fichier (securite)
@@ -19,7 +19,7 @@ function uploadImages($temporaryFile, $level, $title, $date) {
     $extensionFichier = strtolower(pathinfo($temporaryFile['name'], PATHINFO_EXTENSION));
 
     if (!in_array($extensionFichier, $extensionsAutorisees)) {
-        return ["success" => false, "message" => "Format de fichier non autorise. Images uniquement."];
+        throw new RuntimeException("Format de fichier non autorise. Images uniquement.", 422);
     }
 
     // Keep the original name for now as requested
@@ -49,16 +49,26 @@ function uploadImages($temporaryFile, $level, $title, $date) {
 
         return ["success" => true, "location" => '/' . $uploadFile . '/' . $originalName];
     } else {
-        return ["success" => false, "message" => "Erreur lors de la sauvegarde sur le serveur."];
+        throw new RuntimeException("Erreur lors de la sauvegarde sur le serveur.", 500);
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titreArticle = $_POST['title'];
-    $dateCreation = $_POST['date'];
-    $fichierImage = $_FILES['file'];
+    try {
+        $titreArticle = $_POST['title'];
+        $dateCreation = $_POST['date'];
+        $fichierImage = $_FILES['file'];
 
-    $result = uploadImages($fichierImage, '../..', $titreArticle, $dateCreation);
-    header('Content-Type: application/json');
-    echo json_encode($result);
+        $result = uploadImages($fichierImage, '..', $titreArticle, $dateCreation);
+        header('Content-Type: application/json');
+        echo json_encode($result);
+    } catch (RuntimeException $e) {
+        $status = $e->getCode() !== 0 ? $e->getCode() : 500;
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
 }

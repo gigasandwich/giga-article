@@ -6,9 +6,7 @@ require_once '../model/Article.php';
 function postArticle() {
     try {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo "Method not allowed";
-            return;
+            throw new RuntimeException("Method not allowed", 405);
         }
 
         $sessionArticle = isset($_SESSION['article']) ? $_SESSION['article'] : ['content_photos' => []];
@@ -19,9 +17,7 @@ function postArticle() {
         $cover = isset($_POST['cover']) ? trim($_POST['cover']) : null;
 
         if ($title === '' || $date === '' || $content === '') {
-            http_response_code(422);
-            echo "Missing required fields";
-            return;
+            throw new RuntimeException("Missing required fields", 422);
         }
 
         // Rename photos from session
@@ -41,8 +37,13 @@ function postArticle() {
 
                 if (rename($oldPath, $newPath)) {
                     // TODO: only change img.src=
-                    // Update content with new path
-                    $content = str_replace($oldName, $newName, $content);
+                    // Update content with new path, but only inside img src
+                    $escapedOldName = preg_quote($oldName, '/');
+                    $content = preg_replace(
+                        '/(<img\b[^>]*\bsrc=["\"][^"\"]*)' . $escapedOldName . '([^"\"]*["\"][^>]*>)/i',
+                        '$1' . $newName . '$2',
+                        $content
+                    );
                     $finalPhotoPaths[] = 'uploads/' . $newName;
                 }
             }
@@ -50,9 +51,7 @@ function postArticle() {
 
         $pdo = connection();
         if (!$pdo) {
-            http_response_code(500);
-            echo "Database connection failed";
-            return;
+            throw new RuntimeException("Database connection failed", 500);
         }
 
         $article = new Article(1, $title, '', $cover, $content, $date);
@@ -70,12 +69,28 @@ function postArticle() {
             'url' => $article->getUrl(),
             'photos' => $finalPhotoPaths
         ]);
+    } catch (RuntimeException $e) {
+        $status = $e->getCode() !== 0 ? $e->getCode() : 500;
+        http_response_code($status);
+        header(header: 'Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
     } catch (InvalidArgumentException $e) {
         http_response_code(400);
-        echo "Error creating article: " . $e->getMessage();
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'error' => "Error creating article: " . $e->getMessage()
+        ]);
     } catch (PDOException $e) {
         http_response_code(500);
-        echo "Database error: " . $e->getMessage();
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'error' => "Database error: " . $e->getMessage()
+        ]);
     }
 }
 
