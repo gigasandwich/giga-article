@@ -23,6 +23,7 @@ if (!isset($_SESSION['article'])) {
     <h1>Creation d'article</h1>
 
     <div>
+        <div id="message-container"></div>
         <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
             <div class="article-header">
                 <div id="cover" onclick="document.getElementById('cover-file').click()">
@@ -147,11 +148,12 @@ if (!isset($_SESSION['article'])) {
             });
 
             const form = document.getElementById("article-form");
+            const messageContainer = document.getElementById("message-container");
+
             form.addEventListener("submit", (event) => {
                 event.preventDefault();
 
-                const content = tinymce.get("content").getContent();
-                console.log(content);
+                messageContainer.innerHTML = '';
 
                 const formData = new FormData(form);
                 
@@ -159,12 +161,41 @@ if (!isset($_SESSION['article'])) {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
                     console.log(data);
+                    if (data.success) {
+                        messageContainer.innerHTML = `<div class="alert alert-success">Article créé avec succès !</div>`;
+                        
+                        // Reset form
+                        form.reset();
+                        
+                        // Clear TinyMCE
+                        tinymce.get("content").setContent('');
+                        
+                        // Reset cover preview
+                        const img = coverDiv.querySelector('img');
+                        if (img) img.remove();
+                        coverDiv.classList.remove('has-image');
+                        const placeholder = coverDiv.querySelector('.placeholder');
+                        if (placeholder) placeholder.style.display = 'flex';
+
+                        // Restore default date
+                        const today = new Date();
+                        const yyyy = today.getFullYear();
+                        const mm = String(today.getMonth() + 1).padStart(2, '0');
+                        const dd = String(today.getDate()).padStart(2, '0');
+                        dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+                        // Scroll to top to see message
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        messageContainer.innerHTML = `<div class="alert alert-error">${data.error || 'Une erreur est survenue.'}</div>`;
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    messageContainer.innerHTML = `<div class="alert alert-error">Erreur reseau ou serveur</div>`;
                 });
             });
         });
