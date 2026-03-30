@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../db/Connection.php';
-require_once '../article/Article.php';
+require_once '../model/Article.php';
 
 function postArticle() {
     try {
