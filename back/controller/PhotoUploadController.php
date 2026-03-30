@@ -47,7 +47,7 @@ function uploadImages($temporaryFile, $level, $title, $date) {
             'date_at_upload' => $date
         ];
 
-        return ["success" => true, "location" => $uploadFile . '/' . $originalName];
+        return ["success" => true, "location" => '/' . $uploadFile . '/' . $originalName];
     } else {
         return ["success" => false, "message" => "Erreur lors de la sauvegarde sur le serveur."];
     }
