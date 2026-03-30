@@ -1,3 +1,5 @@
+<?php require_once __DIR__ . '/../../back/auth/check_auth.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,5 +9,7 @@
 </head>
 <body>
     <a href="articles/create.php">Creation d'article</a>
+    
+    <h1>Liste des articles</h1>
 </body>
 </html>
