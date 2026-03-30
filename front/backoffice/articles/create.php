@@ -16,6 +16,9 @@
 
     <div>
         <form action="">
+            <div id="cover">
+                
+            </div>
             <div>
                 <label for="title">Titre</label>
                 <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">

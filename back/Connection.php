@@ -1,4 +1,6 @@
 <?php
+use Delight\Auth\Auth;
+
 function connection() {
     $host = 'db';
     $port = '5432';
@@ -16,3 +18,7 @@ function connection() {
         return null;
     }
 }
+
+$pdo = Connection();
+
+$auth = new Auth($pdo);
