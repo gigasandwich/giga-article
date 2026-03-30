@@ -35,7 +35,7 @@ function uploadImages($temporaryFile, $destinationFinal) {
 
     // 7. On deplace le fichier
     if (move_uploaded_file($temporaryFile['tmp_name'], $cheminComplet)) {
-        return ["success" => true, "message" => "Image uploadée avec succes!", "nom_fichier" => $nouveauNomFichier];
+        return ["success" => true, "location" => $cheminComplet];
     } else {
         return ["success" => false, "message" => "Erreur lors de la sauvegarde sur le serveur."];
     }
