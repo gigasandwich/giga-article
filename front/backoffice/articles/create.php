@@ -23,18 +23,28 @@ if (!isset($_SESSION['article'])) {
     <h1>Creation d'article</h1>
 
     <div>
+        <div id="message-container"></div>
         <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
-            <div id="cover">
-                
-            </div>
-            <div>
-                <label for="title">Titre</label>
-                <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
-            </div>
+            <div class="article-header">
+                <div id="cover" onclick="document.getElementById('cover-file').click()">
+                    <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
+                    <div class="placeholder">
+                        <span class="plus-icon">+</span>
+                        <span>Photo de couverture</span>
+                    </div>
+                </div>
 
-            <div>
-                <label for="date">Date de creation</label>
-                <input type="date" name="date" id="date">
+                <div class="header-inputs">
+                    <div>
+                        <label for="title">Titre</label>
+                        <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
+                    </div>
+
+                    <div>
+                        <label for="date">Date de creation</label>
+                        <input type="date" name="date" id="date">
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -52,7 +62,7 @@ if (!isset($_SESSION['article'])) {
         document.addEventListener("DOMContentLoaded", function() {
             tinymce.init({
                 selector: '#content',
-                height: 300,
+                height: 450,
                 plugins: [
                     // Core editing features
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
@@ -115,14 +125,35 @@ if (!isset($_SESSION['article'])) {
                 dateInput.value = `${yyyy}-${mm}-${dd}`;
             }
 
-            const submitButton = document.getElementById("submit-button");
+            const coverInput = document.getElementById('cover-file');
+            const coverDiv = document.getElementById('cover');
+
+            coverInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        let img = coverDiv.querySelector('img');
+                        if (!img) {
+                            img = document.createElement('img');
+                            coverDiv.appendChild(img);
+                        }
+                        img.src = e.target.result;
+                        coverDiv.classList.add('has-image');
+                        
+                        // Small overlay adjustment handled via CSS
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
 
             const form = document.getElementById("article-form");
+            const messageContainer = document.getElementById("message-container");
+
             form.addEventListener("submit", (event) => {
                 event.preventDefault();
 
-                const content = tinymce.get("content").getContent();
-                console.log(content);
+                messageContainer.innerHTML = '';
 
                 const formData = new FormData(form);
                 
@@ -130,12 +161,41 @@ if (!isset($_SESSION['article'])) {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
                     console.log(data);
+                    if (data.success) {
+                        messageContainer.innerHTML = `<div class="alert alert-success">Article créé avec succès !</div>`;
+                        
+                        // Reset form
+                        form.reset();
+                        
+                        // Clear TinyMCE
+                        tinymce.get("content").setContent('');
+                        
+                        // Reset cover preview
+                        const img = coverDiv.querySelector('img');
+                        if (img) img.remove();
+                        coverDiv.classList.remove('has-image');
+                        const placeholder = coverDiv.querySelector('.placeholder');
+                        if (placeholder) placeholder.style.display = 'flex';
+
+                        // Restore default date
+                        const today = new Date();
+                        const yyyy = today.getFullYear();
+                        const mm = String(today.getMonth() + 1).padStart(2, '0');
+                        const dd = String(today.getDate()).padStart(2, '0');
+                        dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+                        // Scroll to top to see message
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        messageContainer.innerHTML = `<div class="alert alert-error">${data.error || 'Une erreur est survenue.'}</div>`;
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    messageContainer.innerHTML = `<div class="alert alert-error">Erreur reseau ou serveur</div>`;
                 });
             });
         });
