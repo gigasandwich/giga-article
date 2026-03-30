@@ -158,4 +158,26 @@ class Article {
 
         return $imagesTrouvees;
     }
+
+    public function savePictures(PDO $pdo, $level) {
+        try {
+            // 1. On recupere toutes les images liees a cet article
+            $images = $this->getArticleImages($level);
+            
+            // 2. On prepare la requete d'insertion dans la table picture
+            $stmt = $pdo->prepare("INSERT INTO picture (url, article_id) VALUES (:url, :article_id) ON CONFLICT (url) DO NOTHING");
+            
+            // 3. On boucle sur chaque image trouvee
+            foreach ($images as $imageUrl) {
+                // On s'assure qu'on n'insere pas l'image de couverture si elle y est deja
+                if ($imageUrl !== $this->getCover()) {
+                    $stmt->bindValue(':url', $imageUrl);
+                    $stmt->bindValue(':article_id', $this->getId(), PDO::PARAM_INT);
+                    $stmt->execute();
+                }
+            }
+        } catch (PDOException $e) {
+            echo "Error saving pictures: " . $e->getMessage();
+        }
+    }
 }
