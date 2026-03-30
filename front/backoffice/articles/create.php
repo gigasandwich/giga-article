@@ -23,7 +23,7 @@ if (!isset($_SESSION['article'])) {
     <h1>Creation d'article</h1>
 
     <div>
-        <form action="/back/controller/ArticleController.php" method="POST" enctype="multipart/form-data" id="article-form">
+        <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
             <div id="cover">
                 
             </div>
@@ -47,7 +47,7 @@ if (!isset($_SESSION['article'])) {
     </div>
 
     <script>
-        const backUploadUrl = "/back/Upload.php";
+        const backUploadUrl = "/back/controller/PhotoUploadController.php";
 
         document.addEventListener("DOMContentLoaded", function() {
             tinymce.init({
@@ -126,7 +126,7 @@ if (!isset($_SESSION['article'])) {
 
                 const formData = new FormData(form);
                 
-                fetch("/back/controller/ArticleController.php", {
+                fetch("/back/controller/ArticleCreationController.php", {
                     method: 'POST',
                     body: formData
                 })
