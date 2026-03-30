@@ -24,21 +24,26 @@ if (!isset($_SESSION['article'])) {
 
     <div>
         <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
-            <div id="cover" onclick="document.getElementById('cover-file').click()">
-                <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
-                <div class="placeholder">
-                    <span class="plus-icon">+</span>
-                    <span>Photo de couverture</span>
+            <div class="article-header">
+                <div id="cover" onclick="document.getElementById('cover-file').click()">
+                    <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
+                    <div class="placeholder">
+                        <span class="plus-icon">+</span>
+                        <span>Photo de couverture</span>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <label for="title">Titre</label>
-                <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
-            </div>
 
-            <div>
-                <label for="date">Date de creation</label>
-                <input type="date" name="date" id="date">
+                <div class="header-inputs">
+                    <div>
+                        <label for="title">Titre</label>
+                        <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
+                    </div>
+
+                    <div>
+                        <label for="date">Date de creation</label>
+                        <input type="date" name="date" id="date">
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -56,7 +61,7 @@ if (!isset($_SESSION['article'])) {
         document.addEventListener("DOMContentLoaded", function() {
             tinymce.init({
                 selector: '#content',
-                height: 300,
+                height: 450,
                 plugins: [
                     // Core editing features
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',

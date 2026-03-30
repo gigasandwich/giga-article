@@ -53,13 +53,26 @@ input:focus, textarea:focus, #submit-button:focus{
 	outline-offset:2px;
 }
 
+.article-header {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.header-inputs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 
 .tox, .tox-editor-container{max-width:100%;border-radius:8px}
 
 #cover {
-	width: 300px;
-	height: 300px;
-	margin: 0 auto 20px auto;
+	width: 200px;
+	height: 200px;
+	margin: 0;
 	border-radius: 12px;
 	background-color: #f1f5f9;
 	border: 2px dashed #cbd5e1;
@@ -71,6 +84,7 @@ input:focus, textarea:focus, #submit-button:focus{
 	overflow: hidden;
 	position: relative;
 	transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 #cover:hover {
