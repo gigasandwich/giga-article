@@ -131,6 +131,14 @@ if (!isset($_SESSION['article'])) {
             coverInput.addEventListener('change', function() {
                 const file = this.files[0];
                 if (file) {
+                    const maxSize = 5 * 1024 * 1024; // 5 Mo
+                    if (file.size > maxSize) {
+                        messageContainer.innerHTML = `<div class="alert alert-error">Le fichier est trop volumineux (max 5 Mo).</div>`;
+                        this.value = ''; // Reset input
+                        return;
+                    }
+                    messageContainer.innerHTML = '';
+
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         let img = coverDiv.querySelector('img');

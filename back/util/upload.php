@@ -1,12 +1,37 @@
 <?php
 
-function uploadImages($temporaryFile, $level, $title, $date) {
+function uploadImages($temporaryFile, $level, $title, $date) {    
     if (!$temporaryFile || !isset($temporaryFile['error'])) {
         throw new RuntimeException("Fichier manquant ou invalide", 400);
     }
     // 1. Verifier s'il y a eu une erreur lors de l'upload
     if ($temporaryFile['error'] !== UPLOAD_ERR_OK) {
-        throw new RuntimeException("Erreur lors de l'envoi du fichier.", 400);
+        switch ($temporaryFile['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+                $message = "Le fichier dépasse la limite autorisée par le serveur (php.ini).";
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $message = "Le fichier dépasse la limite autorisée par le formulaire.";
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $message = "L'envoi du fichier a été interrompu.";
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $message = "Aucun fichier n'a été envoyé.";
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $message = "Dossier temporaire manquant sur le serveur.";
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $message = "Échec de l'écriture du fichier sur le disque.";
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $message = "Une extension PHP a arrêté l'envoi.";
+                break;
+            default:
+                $message = "Erreur inconnue lors de l'envoi du fichier.";
+        }
+        throw new RuntimeException($message, 400);
     }
 
     // 2. Verifier la taille du fichier (ex: limite a 5 Mo)

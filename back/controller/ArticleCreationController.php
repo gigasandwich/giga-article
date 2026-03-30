@@ -20,7 +20,7 @@ function postArticle() {
         $content = isset($_POST['content']) ? trim($_POST['content']) : '';
         
         $coverPath = null;
-        if (isset($_FILES['cover']) && $_FILES['cover']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['cover'])) {
             $uploadResult = uploadImages($_FILES['cover'], '../..', $title, $date);
             if (isset($uploadResult['success']) && $uploadResult['success']) {
                 $oldPath = '../../' . $uploadResult['location'];

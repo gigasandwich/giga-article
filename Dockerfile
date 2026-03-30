@@ -25,6 +25,10 @@ WORKDIR /var/www/html
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Set max upload size
+RUN echo "upload_max_filesize=5M" > /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "post_max_size=5M" >> /usr/local/etc/php/conf.d/uploads.ini
+
 EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
