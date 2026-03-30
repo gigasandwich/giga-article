@@ -24,8 +24,12 @@ if (!isset($_SESSION['article'])) {
 
     <div>
         <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
-            <div id="cover">
-                
+            <div id="cover" onclick="document.getElementById('cover-file').click()">
+                <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
+                <div class="placeholder">
+                    <span class="plus-icon">+</span>
+                    <span>Photo de couverture</span>
+                </div>
             </div>
             <div>
                 <label for="title">Titre</label>
@@ -115,7 +119,27 @@ if (!isset($_SESSION['article'])) {
                 dateInput.value = `${yyyy}-${mm}-${dd}`;
             }
 
-            const submitButton = document.getElementById("submit-button");
+            const coverInput = document.getElementById('cover-file');
+            const coverDiv = document.getElementById('cover');
+
+            coverInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        let img = coverDiv.querySelector('img');
+                        if (!img) {
+                            img = document.createElement('img');
+                            coverDiv.appendChild(img);
+                        }
+                        img.src = e.target.result;
+                        coverDiv.classList.add('has-image');
+                        
+                        // Small overlay adjustment handled via CSS
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
 
             const form = document.getElementById("article-form");
             form.addEventListener("submit", (event) => {
