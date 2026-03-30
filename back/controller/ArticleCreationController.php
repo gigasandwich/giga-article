@@ -1,9 +1,11 @@
 <?php
-session_start();
+if (!isset($_SESSION)) {
+    session_start();
+}
+
 require_once '../db/Connection.php';
 require_once '../model/Article.php';
-require_once 'PhotoUploadController.php';
-
+require_once '../util/upload.php';
 
 function postArticle() {
     try {
@@ -20,7 +22,7 @@ function postArticle() {
         $coverPath = null;
         if (isset($_FILES['cover']) && $_FILES['cover']['error'] === UPLOAD_ERR_OK) {
             $uploadResult = uploadImages($_FILES['cover'], '../..', $title, $date);
-            if ($uploadResult['success']) {
+            if (isset($uploadResult['success']) && $uploadResult['success']) {
                 $oldPath = '../../' . $uploadResult['location'];
                 $extension = strtolower(pathinfo($oldPath, PATHINFO_EXTENSION));
                 $titlePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $title);
@@ -90,7 +92,7 @@ function postArticle() {
     } catch (RuntimeException $e) {
         $status = $e->getCode() !== 0 ? $e->getCode() : 500;
         http_response_code($status);
-        header(header: 'Content-Type: application/json');
+        header('Content-Type: application/json');
         echo json_encode([
             'success' => false,
             'error' => $e->getMessage()
