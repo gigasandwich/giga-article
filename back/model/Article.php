@@ -106,6 +106,22 @@ class Article {
         }
     }
 
+    public static function getById(PDO $pdo, int $id): ?Article {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM article WHERE id = :id");
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
+            }
+            return null;
+        } catch (PDOException $e) {
+            echo "Error fetching article by ID: " . $e->getMessage();
+            return null;
+        }
+    }
+
     public function saveArticle(PDO $pdo) {
         try {
             $stmt = $pdo->prepare("INSERT INTO article (title, url, cover, content, created_at) VALUES (:title, :url, :cover, :content, :created_at)");
