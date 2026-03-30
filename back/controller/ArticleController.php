@@ -37,8 +37,13 @@ function postArticle() {
 
                 if (rename($oldPath, $newPath)) {
                     // TODO: only change img.src=
-                    // Update content with new path
-                    $content = str_replace($oldName, $newName, $content);
+                    // Update content with new path, but only inside img src
+                    $escapedOldName = preg_quote($oldName, '/');
+                    $content = preg_replace(
+                        '/(<img\b[^>]*\bsrc=["\"][^"\"]*)' . $escapedOldName . '([^"\"]*["\"][^>]*>)/i',
+                        '$1' . $newName . '$2',
+                        $content
+                    );
                     $finalPhotoPaths[] = 'uploads/' . $newName;
                 }
             }
@@ -67,7 +72,7 @@ function postArticle() {
     } catch (RuntimeException $e) {
         $status = $e->getCode() !== 0 ? $e->getCode() : 500;
         http_response_code($status);
-        header('Content-Type: application/json');
+        header(header: 'Content-Type: application/json');
         echo json_encode([
             'success' => false,
             'error' => $e->getMessage()
