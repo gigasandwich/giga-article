@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../Connection.php';
+require_once '../db/Connection.php';
 require_once '../article/Article.php';
 
 function postArticle() {

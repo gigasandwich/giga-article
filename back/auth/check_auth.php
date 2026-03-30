@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../Connection.php';
+require __DIR__ . '/../db/Connection.php';
 
 if (!$auth->isLoggedIn()) {
     $loginUrl = '/front/backoffice/auth/login.php';
