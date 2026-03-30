@@ -29,7 +29,7 @@
     - [ok]Upload photos
 
 - Read articles
-    - listAll()
+    - [ok]listAll()
 ## integration
 - Miupload
 - confirmation de creation article dans fo
