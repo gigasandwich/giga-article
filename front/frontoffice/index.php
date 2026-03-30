@@ -45,6 +45,7 @@ $articles = Article::getAll($pdo);
     <link rel="stylesheet" href="/public/assets/styles/list-article.css">
 </head>
 <body>
+    <?php include "../component/header.php"; ?>
     <main class="articles-list">
         <h1>Liste des articles</h1>
         <ul>
