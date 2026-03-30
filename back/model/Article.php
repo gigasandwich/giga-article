@@ -106,7 +106,7 @@ class Article {
         }
     }
 
-    public static function getById(PDO $pdo, $id) {
+    public static function getById(PDO $pdo, int $id): ?Article {
         try {
             $stmt = $pdo->prepare("SELECT * FROM article WHERE id = :id");
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -115,9 +115,9 @@ class Article {
             if ($row) {
                 return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
             }
-            return null;    
+            return null;
         } catch (PDOException $e) {
-            echo "Error fetching article: " . $e->getMessage();
+            echo "Error fetching article by ID: " . $e->getMessage();
             return null;
         }
     }
