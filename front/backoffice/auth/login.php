@@ -1,6 +1,7 @@
 <?php
     $username = "admin";
     $password = "qaws1209edrf34tgyhuj";
+    $error = $_GET['error'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +18,7 @@
 <div class="auth-wrapper">
     <main class="auth-card" role="main">
         <p class="lead">Connectez vous au back office</p>
-        <?php if (isset($error)): ?>
+        <?php if (isset($error) && !empty($error)): ?>
             <div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 

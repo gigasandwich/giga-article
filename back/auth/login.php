@@ -2,26 +2,28 @@
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../db/connection.php';
 
-$error = "";
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: /front/backoffice/auth/login.php');
+    exit;
+}
+
+$username = isset($_POST['username']) ? trim($_POST['username']) : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
+
+$error = '';
 
 try {
-    $username = $_POST["username"];
-    $password = $_POST["password"];
-
     $auth->loginWithUsername($username, $password);
-    $message = "Logged in!";
-} catch (\Delight\Auth\InvalidEmailException $e) {
-    $error = "Wrong email";
+    header('Location: /front/backoffice/index.php');
+    exit;
+} catch (\Delight\Auth\UnknownUsernameException $e) {
+    $error = "Nom d'utilisateur inexistant";
 } catch (\Delight\Auth\InvalidPasswordException $e) {
-    $error = "Wrong password";
-} catch (\Delight\Auth\EmailNotVerifiedException $e) {
-    $error = "Email not verified";
+    $error = 'Mauvais mot de passe';
+}  catch (Exception $e) {
+    $error = $e->getMessage();
 }
 
-if ($auth->isLoggedIn()) {
-    $location = "/front/backoffice/index.php";
-    header("location: $location");
-} else {
-    $location = "/front/backoffice/auth/login.php";
-    header("location: $location");
-}
+$params = http_build_query(array_filter(['error' => $error, 'username' => $username]));
+header('Location: /front/backoffice/auth/login.php' . ($params ? "?" . $params : ''));
+exit;
