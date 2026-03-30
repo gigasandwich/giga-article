@@ -50,16 +50,18 @@ $articles = Article::getAll($pdo);
         <ul>
             <?php foreach ($articles as $a): ?>
                 <li>
-                    <article class="news-article">
-                        <div class="thumb">
-                            <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
-                        </div>
-                        <div class="news-content">
-                            <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
-                            <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
-                            <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
-                        </div>
-                    </article>
+                    <a href="<?= htmlspecialchars($a->getUrl(), ENT_QUOTES, 'UTF-8') ?>" class="news-link">
+                        <article class="news-article">
+                            <div class="thumb">
+                                <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+                            </div>
+                            <div class="news-content">
+                                <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
+                                <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
+                                <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
+                            </div>
+                        </article>
+                    </a>
                 </li>
             <?php endforeach; ?>
         </ul>
