@@ -15,19 +15,21 @@
         - id
         - date
         - titre
+        - photoCouverture
         - contenu
         - url (a generer dans la classe)
         - Fonctions:
-            1. Article creationArcticle()
-                - Controle donnee
-            2. Article persistenceArcticle()
-                - persistePhoto()
-            3. String genererUrl()
-            4. Article persisterUrl()
-    - Upload photos
+            1. [ok]Article creationArcticle()
+                - [ok]Controle donnee
+            2. [ok]Article persistenceArcticle()
+                - [ok]persistePhoto()
+            3. [ok]String genererUrl()
+                - url ex: https://www.lemonde.fr/international/article/2026/03/29/sur-l-immigration-l-espagne-avance-a-contre-courant-de-ses-voisins-europeens_6675201_3210.html
+            4. [ok]Article persisterUrl()
+    - [ok]Upload photos
 
 - Read articles
-    - listAll()
+    - [ok]listAll()
 ## integration
 - Miupload
 - confirmation de creation article dans fo
