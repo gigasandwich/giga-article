@@ -2,4 +2,4 @@ Options +FollowSymlinks
 RewriteEngine On
 
 # Or ^article/.*/[^/]+_(\d+)\.html$
-RewriteRule ^article/.+_([0-9]+)\.html$ /front/frontoffice/article-details.php?article_id=$1 [L,QSA]
+RewriteRule ^article/.+_([0-9]+)\.html$ /front/frontoffice/article.php?id=$1 [L,QSA]
