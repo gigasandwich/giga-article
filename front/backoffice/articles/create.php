@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['article'])) {
+    $_SESSION['article'] = [
+        'content_photos' => []
+    ];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

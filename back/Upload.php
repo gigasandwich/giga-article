@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 function uploadImages($temporaryFile, $level, $title, $date) {
     // 1. Verifier s'il y a eu une erreur lors de l'upload
@@ -21,15 +22,9 @@ function uploadImages($temporaryFile, $level, $title, $date) {
         return ["success" => false, "message" => "Format de fichier non autorise. Images uniquement."];
     }
 
-    // 4. Renommer le fichier avec le titre, la date et un identifiant unique
-    // Pour la securite, on enleve tous les caracteres speciaux et les espaces du titre
-    $titrePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $title); 
-    // On enleve les tirets de la date (ex: 2026-03-30 devient 20260330)
-    $datePropre = str_replace('-', '', $date);
+    // Keep the original name for now as requested
+    $originalName = $temporaryFile['name'];
     
-    // Format final : titre-propre_datepropre_idunique.jpg
-    $nouveauNomFichier = $titrePropre . '_' . $datePropre . '_' . uniqid() . '.' . $extensionFichier;
-
     $uploadFile = 'uploads';
     $destinationFinal = $level . '/' . $uploadFile;
     // 5. Creer le dossier de destination s'il n'existe pas encore
@@ -37,12 +32,22 @@ function uploadImages($temporaryFile, $level, $title, $date) {
          mkdir($destinationFinal, 0755, true);
     }
 
-    // 6. On cree le chemin complet avec le NOUVEAU nom securise
-    $cheminComplet = $destinationFinal . '/' . $nouveauNomFichier;
+    // 6. On cree le chemin complet avec le nom original
+    $cheminComplet = $destinationFinal . '/' . $originalName;
 
     // 7. On deplace le fichier
     if (move_uploaded_file($temporaryFile['tmp_name'], $cheminComplet)) {
-        return ["success" => true, "location" => $uploadFile . '/' . $nouveauNomFichier];
+        // Store in session
+        if (!isset($_SESSION['article'])) {
+            $_SESSION['article'] = ['content_photos' => []];
+        }
+        $_SESSION['article']['content_photos'][] = [
+            'original_name' => $originalName,
+            'title_at_upload' => $title,
+            'date_at_upload' => $date
+        ];
+
+        return ["success" => true, "location" => $uploadFile . '/' . $originalName];
     } else {
         return ["success" => false, "message" => "Erreur lors de la sauvegarde sur le serveur."];
     }
