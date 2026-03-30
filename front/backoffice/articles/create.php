@@ -15,7 +15,7 @@
     <h1>Creation d'article</h1>
 
     <div>
-        <form action="">
+        <form action="/back/controller/ArticleController.php" method="POST" enctype="multipart/form-data" id="article-form">
             <div id="cover">
                 
             </div>
@@ -104,11 +104,27 @@
             }
 
             const submitButton = document.getElementById("submit-button");
-            submitButton.addEventListener("click", function(event) {
+
+            const form = document.getElementById("article-form");
+            form.addEventListener("submit", (event) => {
                 event.preventDefault();
 
                 const content = tinymce.get("content").getContent();
                 console.log(content);
+
+                const formData = new FormData(form);
+                
+                fetch("/back/controller/ArticleController.php", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             });
         });
     </script>
