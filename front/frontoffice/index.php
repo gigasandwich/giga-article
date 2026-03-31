@@ -72,6 +72,14 @@ $all_articles = Article::getAll($pdo, $dateStart, $dateEnd);
 $articles = array_filter($all_articles, function($a) {
     return !$a->isDeleted();
 });
+
+// Separate article types
+$articlesWithCover = array_filter($articles, function($a) {
+    return !empty($a->getCover());
+});
+$articlesWithoutCover = array_filter($articles, function($a) {
+    return empty($a->getCover());
+});
 ?>
 
 <!DOCTYPE html>
@@ -83,6 +91,32 @@ $articles = array_filter($all_articles, function($a) {
     
     <link rel="stylesheet" href="/public/assets/styles/style.css">
     <link rel="stylesheet" href="/public/assets/styles/list-article.css">
+    <style>
+        .section-title {
+            font-family: Georgia, serif;
+            font-size: 2rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #000;
+            text-transform: uppercase;
+        }
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .no-cover-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .no-cover-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <?php include "../component/header.php"; ?>
@@ -93,24 +127,44 @@ $articles = array_filter($all_articles, function($a) {
                 <p style="text-align: center; font-size: 1.2rem; color: #666;">Aucun article n'a encore été publié selon vos criteres</p>
             </div>
         <?php else: ?>
-            <ul>
-                <?php foreach ($articles as $a): ?>
-                    <li>
+            
+            <?php if (!empty($articlesWithCover)): ?>
+                <h2 class="section-title">À la une</h2>
+                <div class="articles-grid">
+                    <?php foreach ($articlesWithCover as $a): ?>
                         <a href="<?= htmlspecialchars($a->getUrl(), ENT_QUOTES, 'UTF-8') ?>" class="news-link">
                             <article class="news-article">
                                 <div class="thumb">
-                                    <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+                                    <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Couverture de <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
                                 </div>
                                 <div class="news-content">
-                                    <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
+                                    <h3 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h3>
                                     <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
                                     <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
                                 </div>
                             </article>
                         </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($articlesWithoutCover)): ?>
+                <h2 class="section-title">Brèves & Analyses</h2>
+                <div class="no-cover-list">
+                    <?php foreach ($articlesWithoutCover as $a): ?>
+                        <a href="<?= htmlspecialchars($a->getUrl(), ENT_QUOTES, 'UTF-8') ?>" class="news-link">
+                            <article class="news-article no-thumb" style="border-left: 4px solid #000; padding-left: 1rem;">
+                                <div class="news-content">
+                                    <h3 class="news-title" style="font-size: 1.4rem;"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h3>
+                                    <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
+                                    <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
+                                </div>
+                            </article>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
         <?php endif; ?>
     </main>
 </body>
