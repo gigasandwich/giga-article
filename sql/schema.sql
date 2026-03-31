@@ -62,9 +62,11 @@ CREATE TABLE article(
    content TEXT NOT NULL,
    created_at TIMESTAMP NOT NULL,
    deleted_at TIMESTAMP DEFAULT NULL,
+    author INTEGER,
    PRIMARY KEY(id),
    UNIQUE(url),
-   UNIQUE(cover)
+    UNIQUE(cover),
+    FOREIGN KEY(author) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE picture(

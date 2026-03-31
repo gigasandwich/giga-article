@@ -4,8 +4,8 @@ FROM php:8.1-apache
 RUN apt-get update && apt-get install -y libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
-# Enable mod_rewrite
-RUN a2enmod rewrite
+# Enable Apache modules: rewrite, compression (deflate/filter), and cache (expires/headers)
+RUN a2enmod rewrite deflate filter expires headers
 
 # Allow .htaccess overrides for the document root
 RUN printf '%s\n' '<Directory "/var/www/html">' '    AllowOverride All' '</Directory>' > /etc/apache2/conf-available/allow-override.conf \
