@@ -95,7 +95,7 @@ $articles = Article::getAll($pdo, $dateStart, $dateEnd);
         <?php if (empty($articles)): ?>
             <div class="empty-state">
                 <img src="/public/assets/img/empty.svg" alt="Aucun article" style="max-width: 300px; display: block; margin: 2rem auto;">
-                <p style="text-align: center; font-size: 1.2rem; color: #666;">Aucun article trouvé pour cette date</p>
+                <p style="text-align: center; font-size: 1.2rem; color: #666;">Aucun article trouvé selon vos criteres</p>
             </div>
         <?php else: ?>
             <ul class="admin-article-list">
