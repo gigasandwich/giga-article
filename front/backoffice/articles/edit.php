@@ -94,7 +94,7 @@ $history = Article::getHistory($pdo, $id);
 
                 <div class="form-actions">
                     <button type="submit" id="submit-button">Enregistrer les modifications</button>
-                    <a href="../index.php" class="btn-cancel">Annuler</a>
+                    <a href="/backoffice" class="btn-cancel">Annuler</a>
                 </div>
             </form>
         </section>

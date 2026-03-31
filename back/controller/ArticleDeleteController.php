@@ -13,7 +13,7 @@ function handleDelete() {
         }
 
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-        $action = isset($_POST['action']) ? $_POST['action'] : 'delete';
+        $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'delete';
 
         if ($id <= 0) {
             throw new RuntimeException("ID d'article invalide", 422);
