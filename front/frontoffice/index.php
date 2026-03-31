@@ -31,7 +31,10 @@ function parse_excerpt_html(string $html): string {
     return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$articles = Article::getAll($pdo);
+$all_articles = Article::getAll($pdo);
+$articles = array_filter($all_articles, function($a) {
+    return !$a->isDeleted();
+});
 ?>
 
 <!DOCTYPE html>
