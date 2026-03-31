@@ -16,7 +16,7 @@ SEED_AUTH=back/auth/seed.php
 SEED_ARTICLES=back/seeders/seed_daily_articles.php
 
 if [ -f "$SEED_AUTH" ]; then
-  echo "[entrypoint] found auth seed script: $SEED_AUTH — attempting to run"
+  echo "[entrypoint] found auth seed script: $SEED_AUTH attempting to run"
   attempts=0
   until php "$SEED_AUTH" || [ $attempts -ge 5 ]; do
     attempts=$((attempts+1))
@@ -31,7 +31,7 @@ if [ -f "$SEED_AUTH" ]; then
 fi
 
 if [ -f "$SEED_ARTICLES" ]; then
-  echo "[entrypoint] found article seed script: $SEED_ARTICLES — attempting to run"
+  echo "[entrypoint] found article seed script: $SEED_ARTICLES attempting to run"
   if php "$SEED_ARTICLES"; then
     echo "[entrypoint] article seeding completed"
   else
@@ -41,4 +41,3 @@ fi
 
 echo "[entrypoint] handing off to Apache"
 exec apache2-foreground
-
