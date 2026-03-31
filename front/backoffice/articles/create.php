@@ -21,12 +21,11 @@ if (!isset($_SESSION['article'])) {
 </head>
 <body>
     <?php include "../../component/header.php"; ?>
-    <main style="padding: 20px; max-width: 1200px; margin: 0 auto;">
-        <h1>Creation d'article</h1>
+    <main style="padding: 5px; max-width: 1200px; margin: 0 auto;">
+        <h1>Création d'article</h1>
 
-    <div>
-        <div id="message-container"></div>
         <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
+            <div id="message-container"></div>
             <div class="article-header">
                 <div id="cover" onclick="document.getElementById('cover-file').click()">
                     <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
@@ -42,21 +41,21 @@ if (!isset($_SESSION['article'])) {
                         <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
                     </div>
 
-                    <div>
-                        <label for="date">Date de creation</label>
-                        <input type="date" name="date" id="date">
-                    </div>
-                </div>
-            </div>
-
             <div>
-                <label for="content">Contenu</label>
-                <textarea name="content" id="content"></textarea>
+                <label for="date">Date de création</label>
+                <input type="date" name="date" id="date">
             </div>
+        </div>
+    </div>
 
-            <button type="submit" id="submit-button">Creer l'article</button>
-            <a href="../index.php" style="margin-left: 10px; color: #666; text-decoration: none;">Annuler</a>
-        </form>
+    <div>
+        <label for="content">Contenu</label>
+        <textarea name="content" id="content"></textarea>
+    </div>
+
+    <button type="submit" id="submit-button">Créer l'article</button>
+    <a href="../index.php" style="margin-left: 10px; color: #666; text-decoration: none;">Annuler</a>
+</form>
     </main>
 
     <script>
@@ -66,6 +65,7 @@ if (!isset($_SESSION['article'])) {
             tinymce.init({
                 selector: '#content',
                 height: 450,
+                language: 'fr_FR',
                 plugins: [
                     // Core editing features
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',

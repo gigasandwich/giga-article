@@ -60,8 +60,8 @@ $history = Article::getHistory($pdo, $id);
         <section class="edit-form-section">
             <h1>Modifier l'article : <?= htmlspecialchars($article->getTitle()) ?></h1>
 
-            <div id="message-container"></div>
             <form action="/back/controller/ArticleUpdateController.php" method="POST" enctype="multipart/form-data" id="article-form">
+                <div id="message-container"></div>
                 <input type="hidden" name="id" value="<?= $article->getId() ?>">
                 <div class="article-header">
                     <div id="cover" onclick="document.getElementById('cover-file').click()" style="background-image: url('/<?= htmlspecialchars($article->getCover()) ?>'); background-size: cover; background-position: center;">
@@ -79,7 +79,7 @@ $history = Article::getHistory($pdo, $id);
                         </div>
 
                         <div>
-                            <label for="date">Date de creation</label>
+                            <label for="date">Date de création</label>
                             <input type="date" name="date" id="date" value="<?= date('Y-m-d', strtotime($article->getCreatedAt())) ?>">
                         </div>
                     </div>
@@ -213,9 +213,49 @@ $history = Article::getHistory($pdo, $id);
         const backUploadUrl = "/back/controller/PhotoUploadController.php";
 
         document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('article-form');
+            const messageContainer = document.getElementById('message-container');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Trigger TinyMCE save to textarea
+                if (tinymce.get('content')) {
+                    tinymce.get('content').save();
+                }
+
+                const formData = new FormData(this);
+                const submitBtn = document.getElementById('submit-button');
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Enregistrement...';
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        messageContainer.innerHTML = `<div style="padding: 15px; background: #d4edda; color: #155724; border-radius: 4px; margin-bottom: 20px; border: 1px solid #c3e6cb;">${result.message || 'Article mis à jour avec succès'}</div>`;
+                        // Optional: reload to update history list
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        messageContainer.innerHTML = `<div style="padding: 15px; background: #f8d7da; color: #721c24; border-radius: 4px; margin-bottom: 20px; border: 1px solid #f5c6cb;">${result.error || 'Une erreur est survenue'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    messageContainer.innerHTML = `<div style="padding: 15px; background: #f8d7da; color: #721c24; border-radius: 4px; margin-bottom: 20px; border: 1px solid #f5c6cb;">Erreur de connexion au serveur</div>`;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Enregistrer les modifications';
+                });
+            });
+
             tinymce.init({
                 selector: '#content',
                 height: 450,
+                language: 'fr_FR',
                 plugins: [
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'image',
                 ],
