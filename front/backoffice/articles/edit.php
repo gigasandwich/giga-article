@@ -5,14 +5,14 @@ require_once __DIR__ . "/../../../back/db/Connection.php";
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
-    header("Location: ../index.php");
+    header("Location: /backoffice");
     exit();
 }
 
 $article = Article::getById($pdo, (int)$id);
 
 if (!$article) {
-    header("Location: ../index.php");
+    header("Location: /backoffice");
     exit();
 }
 
@@ -94,7 +94,7 @@ $history = Article::getHistory($pdo, $id);
 
                 <div class="form-actions">
                     <button type="submit" id="submit-button">Enregistrer les modifications</button>
-                    <a href="../index.php" class="btn-cancel">Annuler</a>
+                    <a href="/backoffice" class="btn-cancel">Annuler</a>
                 </div>
             </form>
         </section>

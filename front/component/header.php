@@ -258,10 +258,10 @@
             <small><?= (new DateTime())->format('g:i a') ?></small>
         </div>
         <div class="header-logo">
-            <a href="/front/frontoffice/">GigaArticle</a>
+            <a href="/">GigaArticle</a>
             <?php 
             if (isset($auth) && $auth->isLoggedIn()): ?>
-                <a href="/front/backoffice/index.php" class="back-office-link">Back-office</a>
+                <a href="/backoffice" class="back-office-link">Back-office</a>
             <?php endif; ?>
         </div>
         <div class="header-user">
@@ -277,10 +277,10 @@
                             Connecté en tant que<br>
                             <strong style="color: #fff; font-size: 0.8rem;"><?= htmlspecialchars($auth->getUsername()) ?></strong>
                         </div>
-                        <a href="/front/backoffice/index.php" class="user-dropdown-item">BACK-OFFICE</a>
-                        <a href="/back/auth/logout.php" class="user-dropdown-item logout">Se déconnecter</a>
+                        <a href="/backoffice" class="user-dropdown-item">BACK-OFFICE</a>
+                        <a href="/logout" class="user-dropdown-item logout">Se déconnecter</a>
                     <?php else: ?>
-                        <a href="/front/backoffice/auth/login.php" class="user-dropdown-item">Se connecter</a>
+                        <a href="/login" class="user-dropdown-item">Se connecter</a>
                     <?php endif; ?>
                 </div>
             </div>

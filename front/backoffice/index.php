@@ -52,7 +52,7 @@ $articles = Article::getAll($pdo);
     <main class="articles-list">
         <div class="backoffice-header">
             <h1>Gestion des articles</h1>
-            <a href="articles/create.php" class="btn btn-primary">Nouveau Article</a>
+            <a href="/backoffice/articles/create" class="btn btn-primary">Nouveau Article</a>
         </div>
 
         <ul class="admin-article-list">
@@ -72,20 +72,18 @@ $articles = Article::getAll($pdo);
                         </div>
                         <div class="admin-actions">
                             <?php if ($a->isDeleted()): ?>
-                                <form action="/back/controller/ArticleDeleteController.php" method="POST">
+                                <form action="/backoffice/articles/restore" method="POST">
                                     <input type="hidden" name="id" value="<?= $a->getId() ?>">
-                                    <input type="hidden" name="action" value="restore">
                                     <button type="submit" class="btn btn-restore" title="Restaurer">
                                         <i class="fa-solid fa-rotate-left"></i>
                                     </button>
                                 </form>
                             <?php else: ?>
-                                <a href="articles/edit.php?id=<?= $a->getId() ?>" class="btn btn-edit" title="Modifier">
+                                <a href="/backoffice/articles/edit/<?= $a->getId() ?>" class="btn btn-edit" title="Modifier">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
-                                <form action="/back/controller/ArticleDeleteController.php" method="POST" onsubmit="return confirm('Supprimer cet article ?')">
+                                <form action="/backoffice/articles/delete" method="POST" onsubmit="return confirm('Supprimer cet article ?')">
                                     <input type="hidden" name="id" value="<?= $a->getId() ?>">
-                                    <input type="hidden" name="action" value="delete">
                                     <button type="submit" class="btn btn-delete" title="Supprimer">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>

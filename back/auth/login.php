@@ -3,12 +3,12 @@ require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../db/Connection.php';
 
 if ($auth->isLoggedIn()) {
-    header('Location: /front/backoffice/index.php');
+    header('Location: /backoffice');
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /front/backoffice/auth/login.php');
+    header('Location: /login');
     exit;
 }
 
@@ -20,7 +20,7 @@ $error = '';
 try {
     $rememberDuration = (int) (60 * 3); // 3 minutes
     $auth->loginWithUsername($username, $password, $rememberDuration);
-    header('Location: /front/backoffice/index.php');
+    header('Location: /backoffice');
     exit;
 } catch (\Delight\Auth\UnknownUsernameException $e) {
     $error = "Nom d'utilisateur inexistant";
@@ -31,5 +31,5 @@ try {
 }
 
 $params = http_build_query(array_filter(['error' => $error, 'username' => $username]));
-header('Location: /front/backoffice/auth/login.php' . ($params ? "?" . $params : ''));
+header('Location: /login' . ($params ? "?" . $params : ''));
 exit;
