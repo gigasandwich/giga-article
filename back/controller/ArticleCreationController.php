@@ -9,6 +9,7 @@ require_once '../util/upload.php';
 
 function postArticle() {
     try {
+        global $auth;
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             throw new RuntimeException("Method not allowed", 405);
         }
@@ -73,7 +74,13 @@ function postArticle() {
             throw new RuntimeException("Database connection failed", 500);
         }
 
-        $article = new Article(1, $title, '', $coverPath, $content, $date);
+        if (!isset($auth) || !$auth->isLoggedIn()) {
+            throw new RuntimeException("Unauthorized", 401);
+        }
+
+        $authorId = $auth->getUserId();
+
+        $article = new Article(1, $title, '', $coverPath, $content, $date, null, $authorId);
         $article->saveArticle($pdo);
         $article->createUrl();
         $article->saveUrl($pdo);
