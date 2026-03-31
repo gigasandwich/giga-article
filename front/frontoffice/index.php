@@ -8,7 +8,7 @@ require_once "../../back/db/Connection.php";
 function parse_excerpt_html(string $html): string {
     $doc = new DOMDocument();
     libxml_use_internal_errors(true);
-    $wrapped = '<!doctype html><html><body>' . $html . '</body></html>';
+    $wrapped = '<!doctype html><html><head><meta charset="utf-8"></head><body>' . $html . '</body></html>';
     $doc->loadHTML($wrapped, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
     libxml_clear_errors();
 
