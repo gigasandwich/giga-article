@@ -9,17 +9,13 @@ if (!$id) {
     exit();
 }
 
-// Simple fetch (assuming static getById exists or similar, if not we use PDO)
-$stmt = $pdo->prepare("SELECT * FROM article WHERE id = ?");
-$stmt->execute([$id]);
-$articleData = $stmt->fetch(PDO::FETCH_ASSOC);
+$article = Article::getById($pdo, (int)$id);
 
-if (!$articleData) {
+if (!$article) {
     header("Location: ../index.php");
     exit();
 }
 
-$article = new Article($articleData['id'], $articleData['title'], $articleData['url'], $articleData['cover'], $articleData['content'], $articleData['created_at']);
 $history = Article::getHistory($pdo, $id);
 ?>
 <!DOCTYPE html>
