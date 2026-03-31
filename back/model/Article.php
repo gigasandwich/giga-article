@@ -106,9 +106,30 @@ class Article {
     }
 
     // Fonctions
-    public static function getAll(PDO $pdo) {
+    public static function getAll(PDO $pdo, $dateStart = null, $dateEnd = null) {
         try {
-            $stmt = $pdo->query("SELECT * FROM article ORDER BY created_at DESC");
+            $sql = "SELECT * FROM article WHERE 1=1";
+
+            if ($dateStart !== null) {
+                $sql .= " AND created_at >= :date_start";
+            }
+
+            if ($dateEnd !== null) {
+                $sql .= " AND created_at <= :date_end";
+            }
+
+            $sql .= " ORDER BY created_at DESC";
+            $stmt = $pdo->prepare($sql);
+
+            if ($dateStart !== null) {
+                $stmt->bindValue(':date_start', $dateStart);
+            }
+
+            if ($dateEnd !== null) {
+                $stmt->bindValue(':date_end', $dateEnd);
+            }
+
+            $stmt->execute();
             $articles = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
