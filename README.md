@@ -1,21 +1,6 @@
-Sample htaccess
+Si docker ne marche pas avec
 ```bash
-----1-----
-Options +FollowSymlinks
-RewriteEngine On
-RewriteRule	^essai.html$ test.html [L]	
-
-
-----2-----
-Options +FollowSymlinks
-RewriteEngine on
-RewriteRule ^pages/article-([_a-z0-9]*).html$  pages/modules.php?id=$1 [L]
-
-----3------
-Options +FollowSymlinks
-RewriteEngine on
-RewriteRule ^/?.*/?.*-([_a-z0-9]*)-([_a-z0-9]*).html$  pages/modules.php?id=$1&idcat=$2 [L]
-
------4----
-RewriteRule ^/?.*/?.*-([_a-z0-9]*)-([_a-z0-9]*).php$  pages/modules.php?id=$1&idcat=$2 [L]
+docker compose up --build
 ```
+
+Il faut rendre `docker-entrypoint.sh` LF et non CRLF.
