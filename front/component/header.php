@@ -70,6 +70,71 @@
     .header-user {
         display: flex;
         justify-content: flex-end;
+        position: relative;
+    }
+
+    .user-menu {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 5px 0; /* Add vertical padding to bridging the gap */
+    }
+
+    .user-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 4px;
+        min-width: 150px;
+        margin-top: 0; /* Changed from 10px to 0 to remove the physical gap */
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .user-dropdown::after {
+        content: '';
+        position: absolute;
+        top: -10px; /* Bridge the hover area to the parent */
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: transparent;
+    }
+
+    .user-menu:hover .user-dropdown,
+    .user-menu.active .user-dropdown {
+        display: flex;
+    }
+
+    .user-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        right: 12px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid #444;
+    }
+
+    .user-dropdown-item {
+        padding: 10px 15px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+    }
+
+    .user-dropdown-item:hover {
+        background: #3a3a3a;
+    }
+
+    .user-dropdown-item.logout {
+        border-top: 1px solid #444;
+        color: #ff4d4d;
     }
 
     .user-icon {
@@ -200,11 +265,25 @@
             <?php endif; ?>
         </div>
         <div class="header-user">
-            <a href="/front/backoffice/auth/login.php" class="user-icon" title="Accéder au Back Office">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10,10-4.48,10-10S17.52,2,12,2Zm0,3c1.66,0,3,1.34,3,3s-1.34,3-3,3-3-1.34-3-3,1.34-3,3-3Zm0,14.2c-2.5,0-4.71-1.28-6-3.22.03-1.99,4-3.08,6-3.08,1.99,0,5.97,1.09,6,3.08-1.29,1.94-3.5,3.22-6,3.22Z"/>
-                </svg>
-            </a>
+            <div class="user-menu">
+                <a href="#" class="user-icon" title="Menu Utilisateur" onclick="return false;">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10,10-4.48,10-10S17.52,2,12,2Zm0,3c1.66,0,3,1.34,3,3s-1.34,3-3,3-3-1.34-3-3,1.34-3,3-3Zm0,14.2c-2.5,0-4.71-1.28-6-3.22.03-1.99,4-3.08,6-3.08,1.99,0,5.97,1.09,6,3.08-1.29,1.94-3.5,3.22-6,3.22Z"/>
+                    </svg>
+                </a>
+                <div class="user-dropdown">
+                    <?php if (isset($auth) && $auth->isLoggedIn()): ?>
+                        <div class="user-dropdown-item" style="color: #999; font-size: 0.75rem; border-bottom: 1px solid #444;">
+                            Connecté en tant que<br>
+                            <strong style="color: #fff; font-size: 0.8rem;"><?= htmlspecialchars($auth->getUsername()) ?></strong>
+                        </div>
+                        <a href="/front/backoffice/index.php" class="user-dropdown-item">BACK-OFFICE</a>
+                        <a href="/back/auth/logout.php" class="user-dropdown-item logout">Se déconnecter</a>
+                    <?php else: ?>
+                        <a href="/front/backoffice/auth/login.php" class="user-dropdown-item">Se connecter</a>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 </header>
@@ -244,7 +323,59 @@ $is_list_page = ($current_page === 'index.php');
                     document.getElementById('filterForm').submit();
                 }
             });
+
+            // Toggle user menu on click
+            const userIcon = document.querySelector('.user-icon');
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.querySelector('.user-dropdown');
+
+            if (userIcon) {
+                userIcon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userMenu.classList.toggle('active');
+                });
+            }
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function() {
+                if (userMenu) userMenu.classList.remove('active');
+            });
+
+            // Prevent closing when clicking inside the dropdown
+            if (userDropdown) {
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
         </script>
     </div>
 </div>
+<?php endif; ?>
+
+<?php if (!$is_list_page): ?>
+<script>
+    // Toggle user menu on click for non-list pages
+    const userIconAlt = document.querySelector('.user-icon');
+    const userMenuAlt = document.querySelector('.user-menu');
+    const userDropdownAlt = document.querySelector('.user-dropdown');
+
+    if (userIconAlt) {
+        userIconAlt.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            userMenuAlt.classList.toggle('active');
+        });
+    }
+
+    document.addEventListener('click', function() {
+        if (userMenuAlt) userMenuAlt.classList.remove('active');
+    });
+
+    if (userDropdownAlt) {
+        userDropdownAlt.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+</script>
 <?php endif; ?>
