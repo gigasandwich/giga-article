@@ -41,3 +41,4 @@ fi
 
 echo "[entrypoint] handing off to Apache"
 exec apache2-foreground
+
