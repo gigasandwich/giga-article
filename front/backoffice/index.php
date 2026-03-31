@@ -92,45 +92,52 @@ $articles = Article::getAll($pdo, $dateStart, $dateEnd);
             <a href="/backoffice/articles/create" class="btn btn-primary">Nouveau Article</a>
         </div>
 
-        <ul class="admin-article-list">
-            <?php foreach ($articles as $a): ?>
-                <li class="admin-article-item <?= $a->isDeleted() ? 'deleted' : '' ?>">
-                    <div class="news-article">
-                        <?php if ($a->isDeleted()): ?>
-                            <span class="deleted-badge">Supprimé</span>
-                        <?php endif; ?>
-                        <div class="thumb">
-                            <img src="/<?= htmlspecialchars($a->getCover() ?: 'public/assets/images/placeholder.jpg', ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
-                        </div>
-                        <div class="news-content">
-                            <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
-                            <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
-                            <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
-                        </div>
-                        <div class="admin-actions">
+        <?php if (empty($articles)): ?>
+            <div class="empty-state">
+                <img src="/public/assets/img/empty.svg" alt="Aucun article" style="max-width: 300px; display: block; margin: 2rem auto;">
+                <p style="text-align: center; font-size: 1.2rem; color: #666;">Aucun article trouvé pour cette date</p>
+            </div>
+        <?php else: ?>
+            <ul class="admin-article-list">
+                <?php foreach ($articles as $a): ?>
+                    <li class="admin-article-item <?= $a->isDeleted() ? 'deleted' : '' ?>">
+                        <div class="news-article">
                             <?php if ($a->isDeleted()): ?>
-                                <form action="/backoffice/articles/restore" method="POST">
-                                    <input type="hidden" name="id" value="<?= $a->getId() ?>">
-                                    <button type="submit" class="btn btn-restore" title="Restaurer">
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </button>
-                                </form>
-                            <?php else: ?>
-                                <a href="/backoffice/articles/edit/<?= $a->getId() ?>" class="btn btn-edit" title="Modifier">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                                <form action="/backoffice/articles/delete" method="POST" onsubmit="return confirm('Supprimer cet article ?')">
-                                    <input type="hidden" name="id" value="<?= $a->getId() ?>">
-                                    <button type="submit" class="btn btn-delete" title="Supprimer">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
+                                <span class="deleted-badge">Supprimé</span>
                             <?php endif; ?>
+                            <div class="thumb">
+                                <img src="/<?= htmlspecialchars($a->getCover() ?: 'public/assets/images/placeholder.jpg', ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+                            </div>
+                            <div class="news-content">
+                                <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
+                                <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
+                                <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
+                            </div>
+                            <div class="admin-actions">
+                                <?php if ($a->isDeleted()): ?>
+                                    <form action="/backoffice/articles/restore" method="POST">
+                                        <input type="hidden" name="id" value="<?= $a->getId() ?>">
+                                        <button type="submit" class="btn btn-restore" title="Restaurer">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </button>
+                                    </form>
+                                <?php else: ?>
+                                    <a href="/backoffice/articles/edit/<?= $a->getId() ?>" class="btn btn-edit" title="Modifier">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form action="/backoffice/articles/delete" method="POST" onsubmit="return confirm('Supprimer cet article ?')">
+                                        <input type="hidden" name="id" value="<?= $a->getId() ?>">
+                                        <button type="submit" class="btn btn-delete" title="Supprimer">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
     </main>
 </body>
 </html>

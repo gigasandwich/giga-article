@@ -87,25 +87,31 @@ $articles = array_filter($all_articles, function($a) {
 <body>
     <?php include "../component/header.php"; ?>
     <main class="articles-list">
-        <h1>Liste des articles</h1>
-        <ul>
-            <?php foreach ($articles as $a): ?>
-                <li>
-                    <a href="<?= htmlspecialchars($a->getUrl(), ENT_QUOTES, 'UTF-8') ?>" class="news-link">
-                        <article class="news-article">
-                            <div class="thumb">
-                                <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
-                            </div>
-                            <div class="news-content">
-                                <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
-                                <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
-                                <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
-                            </div>
-                        </article>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <?php if (empty($articles)): ?>
+            <div class="empty-state">
+                <img src="/public/assets/img/empty.svg" alt="Aucun article" style="max-width: 300px; display: block; margin: 2rem auto;">
+                <p style="text-align: center; font-size: 1.2rem; color: #666;">Aucun article n'a encore été publié pour cette date</p>
+            </div>
+        <?php else: ?>
+            <ul>
+                <?php foreach ($articles as $a): ?>
+                    <li>
+                        <a href="<?= htmlspecialchars($a->getUrl(), ENT_QUOTES, 'UTF-8') ?>" class="news-link">
+                            <article class="news-article">
+                                <div class="thumb">
+                                    <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+                                </div>
+                                <div class="news-content">
+                                    <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
+                                    <time class="news-date" datetime="<?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($a->getCreatedAt(), ENT_QUOTES, 'UTF-8') ?></time>
+                                    <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
+                                </div>
+                            </article>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
     </main>
 </body>
 </html>
