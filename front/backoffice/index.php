@@ -57,10 +57,13 @@ $articles = Article::getAll($pdo);
 
         <ul class="admin-article-list">
             <?php foreach ($articles as $a): ?>
-                <li class="admin-article-item">
+                <li class="admin-article-item <?= $a->isDeleted() ? 'deleted' : '' ?>">
                     <div class="news-article">
+                        <?php if ($a->isDeleted()): ?>
+                            <span class="deleted-badge">Supprimé</span>
+                        <?php endif; ?>
                         <div class="thumb">
-                            <img src="/<?= htmlspecialchars($a->getCover(), ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+                            <img src="/<?= htmlspecialchars($a->getCover() ?: 'public/assets/images/placeholder.jpg', ENT_QUOTES, 'UTF-8') ?>" alt="Thumbnail for <?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
                         </div>
                         <div class="news-content">
                             <h2 class="news-title"><?= htmlspecialchars($a->getTitle(), ENT_QUOTES, 'UTF-8') ?></h2>
@@ -68,15 +71,26 @@ $articles = Article::getAll($pdo);
                             <div class="news-body"><?= parse_excerpt_html($a->getContent()) ?></div>
                         </div>
                         <div class="admin-actions">
-                            <a href="articles/edit.php?id=<?= $a->getId() ?>" class="btn btn-edit" title="Modifier">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <form action="/back/controller/ArticleDeleteController.php" method="POST" onsubmit="return confirm('Supprimer cet article ?')">
-                                <input type="hidden" name="id" value="<?= $a->getId() ?>">
-                                <button type="submit" class="btn btn-delete" title="Supprimer">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
+                            <?php if ($a->isDeleted()): ?>
+                                <form action="/back/controller/ArticleDeleteController.php" method="POST">
+                                    <input type="hidden" name="id" value="<?= $a->getId() ?>">
+                                    <input type="hidden" name="action" value="restore">
+                                    <button type="submit" class="btn btn-restore" title="Restaurer">
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <a href="articles/edit.php?id=<?= $a->getId() ?>" class="btn btn-edit" title="Modifier">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <form action="/back/controller/ArticleDeleteController.php" method="POST" onsubmit="return confirm('Supprimer cet article ?')">
+                                    <input type="hidden" name="id" value="<?= $a->getId() ?>">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" class="btn btn-delete" title="Supprimer">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </li>

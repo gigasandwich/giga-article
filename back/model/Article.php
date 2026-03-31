@@ -6,8 +6,9 @@ class Article {
     private $cover = null;
     private $content = null;
     private $createdAt = null;
+    private $deletedAt = null;
 
-    public function __construct($id, $title, $url, $cover, $content, $date) {
+    public function __construct($id, $title, $url, $cover, $content, $date, $deletedAt = null) {
         try {
             $this->setId($id);
             $this->setTitle($title);
@@ -15,6 +16,7 @@ class Article {
             $this->setCover($cover);
             $this->setContent($content);
             $this->setCreatedAt($date);
+            $this->setDeletedAt($deletedAt);
         } catch (InvalidArgumentException $e) {
             // Handle the exception as needed, e.g., log it or rethrow
             throw $e;
@@ -44,6 +46,14 @@ class Article {
 
     public function getCreatedAt() {
         return $this->createdAt;
+    }
+
+    public function getDeletedAt() {
+        return $this->deletedAt;
+    }
+
+    public function isDeleted() {
+        return $this->deletedAt !== null;
     }
 
     // setters
@@ -91,17 +101,21 @@ class Article {
         $this->createdAt = $createdAt;
     }
 
+    public function setDeletedAt($deletedAt) {
+        $this->deletedAt = $deletedAt;
+    }
+
     // Fonctions
     public static function getAll(PDO $pdo) {
         try {
-            $stmt = $pdo->query("SELECT * FROM article");
+            $stmt = $pdo->query("SELECT * FROM article ORDER BY created_at DESC");
             $articles = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
+                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
             }
             return $articles;
         } catch (PDOException $e) {
-            echo "Error fetching articles: " . $e->getMessage();
+            echo "Erreur lors de la récupération des articles : " . $e->getMessage();
             return [];
         }
     }
@@ -113,12 +127,34 @@ class Article {
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
+                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
             }
             return null;
         } catch (PDOException $e) {
-            echo "Error fetching article by ID: " . $e->getMessage();
+            echo "Erreur lors de la récupération de l'article par ID : " . $e->getMessage();
             return null;
+        }
+    }
+
+    public function delete(PDO $pdo) {
+        try {
+            $stmt = $pdo->prepare("UPDATE article SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id");
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+            $this->setDeletedAt(date('Y-m-d H:i:s'));
+        } catch (PDOException $e) {
+            throw new RuntimeException("Erreur lors de la suppression de l'article : " . $e->getMessage());
+        }
+    }
+
+    public function restore(PDO $pdo) {
+        try {
+            $stmt = $pdo->prepare("UPDATE article SET deleted_at = NULL WHERE id = :id");
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+            $this->setDeletedAt(null);
+        } catch (PDOException $e) {
+            throw new RuntimeException("Erreur lors de la restauration de l'article : " . $e->getMessage());
         }
     }
 
