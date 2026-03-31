@@ -26,14 +26,14 @@ $history = Article::getHistory($pdo, $id);
     <title>Modifier l'article</title>
 
     <link rel="stylesheet" href="/public/assets/styles/style.css">
-    <link rel="stylesheet" href="/public/assets/styles/create-article.css">
+    <link rel="stylesheet" href="/public/assets/styles/article-dashboard.css">
 
     <script src="https://cdn.tiny.cloud/1/o9hrg0a9nx5b8gypfnqerbmac9utp40qhb4ttvgueyf1revd/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 </head>
 <body>
     <?php include "../../component/header.php"; ?>
-    <main class="edit-container">
-        <aside class="version-sidebar">
+    <main class="article-dashboard">
+        <aside class="dashboard-sidebar">
             <h2>Historique</h2>
             <div class="version-timeline">
                 <?php if (!empty($history)): ?>
@@ -59,14 +59,14 @@ $history = Article::getHistory($pdo, $id);
             </div>
         </aside>
 
-        <section class="edit-form-section">
+        <section class="dashboard-form-section">
             <h1>Modifier l'article : <?= htmlspecialchars($article->getTitle()) ?></h1>
 
-            <form action="/back/controller/ArticleUpdateController.php" method="POST" enctype="multipart/form-data" id="article-form">
+            <form action="/back/controller/ArticleUpdateController.php" method="POST" enctype="multipart/form-data" id="article-form" class="dashboard-form">
                 <div id="message-container"></div>
                 <input type="hidden" name="id" value="<?= $article->getId() ?>">
                 <div class="article-header">
-                    <div id="cover" onclick="document.getElementById('cover-file').click()" style="background-image: url('/<?= htmlspecialchars($article->getCover()) ?>'); background-size: cover; background-position: center;">
+                    <div id="cover" onclick="document.getElementById('cover-file').click()" style="background-image: url('/<?= htmlspecialchars($article->getCover()) ?>');">
                         <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
                         <div class="placeholder">
                             <span class="plus-icon">+</span>
@@ -92,301 +92,12 @@ $history = Article::getHistory($pdo, $id);
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" id="submit-button">Enregistrer les modifications</button>
+                    <button type="submit" id="submit-button" class="btn-primary">Enregistrer les modifications</button>
                     <a href="/backoffice" class="btn-cancel">Annuler</a>
                 </div>
             </form>
         </section>
     </main>
-
-    <style>
-        .edit-container {
-            display: flex;
-            gap: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            height: calc(100vh - 100px); /* Fill screen minus header */
-            box-sizing: border-box;
-            overflow: hidden; /* Prevent master scroll */
-            font-family: 'Georgia', serif;
-        }
-
-        .version-sidebar {
-            flex: 0 0 300px;
-            border: var(--neo-border-width) solid var(--neo-black);
-            background: var(--neo-white);
-            box-shadow: var(--neo-shadow);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            height: 100%;
-            box-sizing: border-box;
-        }
-
-        .version-sidebar h2 {
-            text-transform: uppercase;
-            font-weight: 900;
-            font-size: 1.2rem;
-            margin-top: 0;
-            border-bottom: 3px solid var(--neo-black);
-            padding-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .version-timeline {
-            flex: 1;
-            overflow-y: auto;
-            margin-top: 20px;
-            padding-right: 10px;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .version-timeline::-webkit-scrollbar { width: 8px; }
-        .version-timeline::-webkit-scrollbar-track { background: #eee; }
-        .version-timeline::-webkit-scrollbar-thumb { background: var(--neo-black); }
-
-        .version-timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 5px;
-            bottom: 5px;
-            width: 2px;
-            background: var(--neo-black);
-        }
-
-        .version-node {
-            position: relative;
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid transparent;
-            transition: var(--neo-transition);
-        }
-
-        .version-node:hover {
-            background: #f0f0f0;
-            border: 1px solid var(--neo-black);
-        }
-
-        .node-marker {
-            position: absolute;
-            left: -24px;
-            top: 15px;
-            width: 10px;
-            height: 10px;
-            background: var(--neo-blue);
-            border: 2px solid var(--neo-white);
-            box-shadow: 0 0 0 2px var(--neo-black);
-        }
-
-        .v-label {
-            font-weight: 900;
-            color: var(--neo-black);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        .v-status {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            font-weight: 900;
-            padding: 1px 6px;
-            background: var(--neo-black);
-            color: var(--neo-white);
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-
-        .version-node.is-deleted .v-status {
-            background: var(--neo-red);
-        }
-
-        .version-node.is-deleted .node-marker {
-            background: var(--neo-red);
-        }
-
-        .edit-form-section {
-            flex: 1;
-            min-width: 0;
-            background: var(--neo-white);
-            border: var(--neo-border-width) solid var(--neo-black);
-            box-shadow: var(--neo-shadow);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-sizing: border-box;
-        }
-
-        .edit-form-section h1 {
-            font-size: 2rem;
-            text-transform: uppercase;
-            font-weight: 950;
-            margin: 0 0 25px 0;
-            text-align: left;
-            border-bottom: 4px solid var(--neo-black);
-            padding-bottom: 10px;
-        }
-
-        #article-form {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            gap: 20px;
-        }
-
-        .article-header {
-            display: flex;
-            gap: 20px;
-            flex-shrink: 0;
-        }
-
-        #cover {
-            width: 240px;
-            height: 160px;
-            background-color: #eee;
-            border: var(--neo-border-width) solid var(--neo-black);
-            box-shadow: 4px 4px 0px var(--neo-black);
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            flex-shrink: 0;
-            transition: var(--neo-transition);
-        }
-
-        #cover:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px var(--neo-black);
-        }
-
-        .placeholder {
-            font-weight: 950;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.4); /* Dark overlay */
-            color: var(--neo-white); /* High contrast text */
-            text-shadow: 2px 2px 0px var(--neo-black); /* Brutalist text shadow */
-            width: 100%;
-            height: 100%;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-            line-height: 1.2;
-            text-align: center;
-            transition: var(--neo-transition);
-        }
-
-        #cover:hover .placeholder {
-            background: rgba(0, 0, 0, 0.6);
-        }
-
-        .plus-icon { 
-            font-size: 2rem;
-            margin-bottom: 2px;
-        }
-
-        .header-inputs {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .header-inputs label, .content-wrapper label {
-            display: block;
-            text-transform: uppercase;
-            font-weight: 900;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
-        }
-
-        .header-inputs input {
-            width: 100%;
-            padding: 10px;
-            border: var(--neo-border-width) solid var(--neo-black);
-            font-family: inherit;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        .content-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0; /* Important for flex child with overflow */
-        }
-
-        .tox-tinymce {
-            border: var(--neo-border-width) solid var(--neo-black) !important;
-            flex: 1 !important;
-        }
-
-        .form-actions {
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-shrink: 0;
-        }
-
-        #submit-button {
-            padding: 12px 30px;
-            background: var(--neo-green);
-            color: var(--neo-black);
-            border: var(--neo-border-width-thick) solid var(--neo-black);
-            font-weight: 950;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: var(--neo-shadow);
-            transition: var(--neo-transition);
-        }
-
-        #submit-button:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: var(--neo-shadow-hover);
-        }
-
-        #submit-button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px var(--neo-black);
-        }
-
-        .btn-cancel {
-            color: var(--neo-black);
-            text-decoration: none;
-            text-transform: uppercase;
-            font-weight: 900;
-            font-size: 0.9rem;
-            border-bottom: 2px solid transparent;
-        }
-
-        .btn-cancel:hover {
-            border-bottom: 2px solid var(--neo-black);
-        }
-
-        @media (max-width: 1000px) {
-            .edit-container {
-                flex-direction: column;
-                height: auto;
-                overflow: visible;
-            }
-            .version-sidebar {
-                flex: none;
-                height: 300px;
-            }
-        }
-    </style>
 
     <script>
         const backUploadUrl = "/back/controller/PhotoUploadController.php";

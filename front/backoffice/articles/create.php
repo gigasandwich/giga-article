@@ -14,48 +14,71 @@ if (!isset($_SESSION['article'])) {
     <title>Document</title>
 
     <link rel="stylesheet" href="/public/assets/styles/style.css">
-    <link rel="stylesheet" href="/public/assets/styles/create-article.css">
+    <link rel="stylesheet" href="/public/assets/styles/article-dashboard.css">
 
     <script src="https://cdn.tiny.cloud/1/o9hrg0a9nx5b8gypfnqerbmac9utp40qhb4ttvgueyf1revd/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 
 </head>
 <body>
     <?php include "../../component/header.php"; ?>
-    <main style="padding: 5px; max-width: 1200px; margin: 0 auto;">
-        <h1>Création d'article</h1>
+    <main class="article-dashboard">
+        <aside class="dashboard-sidebar">
+            <h2>Informations</h2>
+            <div class="sidebar-content">
+                <p style="font-size: 0.9rem; line-height: 1.6; color: #444;">
+                    Créez un nouvel article pour votre journal. <br><br>
+                    N'oubliez pas d'ajouter une <strong>image de couverture</strong> percutante pour attirer vos lecteurs.
+                </p>
+                <div style="margin-top: 30px; border-top: 2px solid var(--neo-black); padding-top: 20px;">
+                    <span style="display: block; font-weight: 900; text-transform: uppercase; font-size: 0.75rem; margin-bottom: 10px;">Conseils SEO</span>
+                    <ul style="padding-left: 20px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px;">
+                        <li>Utilisez des mots-clés dans le titre.</li>
+                        <li>Structurez avec des titres (H2, H3).</li>
+                        <li>Ajoutez des descriptions aux images.</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
 
-        <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form">
-            <div id="message-container"></div>
-            <div class="article-header">
-                <div id="cover" onclick="document.getElementById('cover-file').click()">
-                    <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
-                    <div class="placeholder">
-                        <span class="plus-icon">+</span>
-                        <span>Photo de couverture</span>
+        <section class="dashboard-form-section">
+            <h1>Création d'article</h1>
+
+            <form action="/back/controller/ArticleCreationController.php" method="POST" enctype="multipart/form-data" id="article-form" class="dashboard-form">
+                <div id="message-container"></div>
+                
+                <div class="article-header">
+                    <div id="cover" onclick="document.getElementById('cover-file').click()">
+                        <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
+                        <div class="placeholder">
+                            <span class="plus-icon">+</span>
+                            <span>Photo de couverture</span>
+                        </div>
+                    </div>
+
+                    <div class="header-inputs">
+                        <div>
+                            <label for="title">Titre</label>
+                            <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
+                        </div>
+
+                        <div>
+                            <label for="date">Date de création</label>
+                            <input type="date" name="date" id="date">
+                        </div>
                     </div>
                 </div>
 
-                <div class="header-inputs">
-                    <div>
-                        <label for="title">Titre</label>
-                        <input type="text" name="title" id="title" placeholder="Ex: Intensification de la guerre en Iran">
-                    </div>
+                <div class="content-wrapper">
+                    <label for="content">Contenu</label>
+                    <textarea name="content" id="content"></textarea>
+                </div>
 
-            <div>
-                <label for="date">Date de création</label>
-                <input type="date" name="date" id="date">
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <label for="content">Contenu</label>
-        <textarea name="content" id="content"></textarea>
-    </div>
-
-    <button type="submit" id="submit-button">Créer l'article</button>
-    <a href="../index.php" style="margin-left: 10px; color: #666; text-decoration: none;">Annuler</a>
-</form>
+                <div class="form-actions">
+                    <button type="submit" id="submit-button" class="btn-primary">Créer l'article</button>
+                    <a href="../index.php" class="btn-cancel">Annuler</a>
+                </div>
+            </form>
+        </section>
     </main>
 
     <script>
@@ -144,15 +167,7 @@ if (!isset($_SESSION['article'])) {
 
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        let img = coverDiv.querySelector('img');
-                        if (!img) {
-                            img = document.createElement('img');
-                            coverDiv.appendChild(img);
-                        }
-                        img.src = e.target.result;
-                        coverDiv.classList.add('has-image');
-                        
-                        // Small overlay adjustment handled via CSS
+                        coverDiv.style.backgroundImage = `url(${e.target.result})`;
                     }
                     reader.readAsDataURL(file);
                 }
@@ -163,8 +178,16 @@ if (!isset($_SESSION['article'])) {
 
             form.addEventListener("submit", (event) => {
                 event.preventDefault();
+                
+                // Sync TinyMCE to textarea
+                if (tinymce.get('content')) {
+                    tinymce.get('content').save();
+                }
 
                 messageContainer.innerHTML = '';
+                const submitBtn = document.getElementById('submit-button');
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Création...';
 
                 const formData = new FormData(form);
                 
@@ -174,7 +197,6 @@ if (!isset($_SESSION['article'])) {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     if (data.success) {
                         messageContainer.innerHTML = `<div class="alert alert-success">Article créé avec succès !</div>`;
                         
@@ -185,11 +207,7 @@ if (!isset($_SESSION['article'])) {
                         tinymce.get("content").setContent('');
                         
                         // Reset cover preview
-                        const img = coverDiv.querySelector('img');
-                        if (img) img.remove();
-                        coverDiv.classList.remove('has-image');
-                        const placeholder = coverDiv.querySelector('.placeholder');
-                        if (placeholder) placeholder.style.display = 'flex';
+                        coverDiv.style.backgroundImage = 'none';
 
                         // Restore default date
                         const today = new Date();
@@ -197,9 +215,6 @@ if (!isset($_SESSION['article'])) {
                         const mm = String(today.getMonth() + 1).padStart(2, '0');
                         const dd = String(today.getDate()).padStart(2, '0');
                         dateInput.value = `${yyyy}-${mm}-${dd}`;
-
-                        // Scroll to top to see message
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     } else {
                         messageContainer.innerHTML = `<div class="alert alert-error">${data.error || 'Une erreur est survenue.'}</div>`;
                     }
@@ -207,6 +222,10 @@ if (!isset($_SESSION['article'])) {
                 .catch(error => {
                     console.error('Error:', error);
                     messageContainer.innerHTML = `<div class="alert alert-error">Erreur reseau ou serveur</div>`;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Créer l\'article';
                 });
             });
         });
