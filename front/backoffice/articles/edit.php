@@ -42,7 +42,10 @@ $history = Article::getHistory($pdo, $id);
             <div class="version-timeline">
                 <?php if (!empty($history)): ?>
                     <?php foreach ($history as $v): ?>
-                        <div class="version-node <?= isset($v['status']) && $v['status'] === 'Supprimé' ? 'is-deleted' : '' ?>">
+                        <div class="version-node <?= isset($v['status']) && $v['status'] === 'Supprimé' ? 'is-deleted' : '' ?>" 
+                             onclick="loadVersion(<?= $v['id'] ?>)" 
+                             style="cursor: pointer;" 
+                             title="Cliquer pour voir cette version">
                             <div class="node-marker"></div>
                             <div class="node-content">
                                 <span class="v-label">v<?= $v['version'] ?></span>
@@ -189,6 +192,11 @@ $history = Article::getHistory($pdo, $id);
             box-shadow: 0 0 0 2px #fa5252;
         }
 
+        .version-node:hover {
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
         .v-date {
             color: #666;
             font-size: 0.8rem;
@@ -326,6 +334,52 @@ $history = Article::getHistory($pdo, $id);
                 }
             };
         });
+
+        function loadVersion(versionId) {
+            if (!confirm('Voulez-vous charger le contenu de cette version dans le formulaire ? (Les modifications non enregistrées seront perdues)')) {
+                return;
+            }
+
+            fetch(`/back/controller/GetVersionDetailController.php?id=${versionId}`)
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        const data = result.data;
+                        
+                        // Remplir les champs
+                        document.getElementById('title').value = data.title;
+                        document.getElementById('date').value = data.date;
+                        
+                        // TinyMCE
+                        if (tinymce.get('content')) {
+                            tinymce.get('content').setContent(data.content);
+                        }
+                        
+                        // Image de couverture
+                        const coverDiv = document.getElementById('cover');
+                        if (data.cover) {
+                            coverDiv.style.backgroundImage = `url('/${data.cover}')`;
+                            coverDiv.style.backgroundSize = 'cover';
+                            coverDiv.querySelector('.placeholder').style.display = 'none';
+                        } else {
+                            coverDiv.style.backgroundImage = 'none';
+                            coverDiv.querySelector('.placeholder').style.display = 'flex';
+                        }
+                        
+                        // Message informatif
+                        const messageContainer = document.getElementById('message-container');
+                        messageContainer.innerHTML = `<div style="padding: 15px; background: #e7f5ff; color: #1971c2; border-radius: 4px; margin-bottom: 20px; border: 1px solid #a5d8ff;">Version chargée. N'oubliez pas d'enregistrer pour valider ces changements.</div>`;
+                        
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        alert('Erreur lors du chargement : ' + result.error);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Erreur de connexion');
+                });
+        }
     </script>
 </body>
 </html>
