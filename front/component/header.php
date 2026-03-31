@@ -278,6 +278,7 @@
                             <strong style="color: #fff; font-size: 0.8rem;"><?= htmlspecialchars($auth->getUsername()) ?></strong>
                         </div>
                         <a href="/backoffice" class="user-dropdown-item">BACK-OFFICE</a>
+                        <a href="/frontoffice" class="user-dropdown-item">FRONT-OFFICE</a>
                         <a href="/logout" class="user-dropdown-item logout">Se déconnecter</a>
                     <?php else: ?>
                         <a href="/login" class="user-dropdown-item">Se connecter</a>
