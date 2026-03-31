@@ -29,6 +29,32 @@
         cursor: pointer;
     }
 
+    .back-office-link {
+        display: inline-block;
+        margin-left: 15px;
+        padding: 4px 12px;
+        background: #333;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.8rem;
+        border-radius: 4px;
+        font-family: inherit;
+        border: 1px solid #444;
+        transition: all 0.2s;
+    }
+
+    .back-office-link:hover {
+        background: #444;
+        border-color: #666;
+    }
+
+    .header-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
     .header-date {
         font-size: 0.85rem;
         font-weight: 500;
@@ -168,6 +194,10 @@
         </div>
         <div class="header-logo">
             <a href="/front/frontoffice/">GigaArticle</a>
+            <?php 
+            if (isset($auth) && $auth->isLoggedIn()): ?>
+                <a href="/front/backoffice/index.php" class="back-office-link">Back-office</a>
+            <?php endif; ?>
         </div>
         <div class="header-user">
             <a href="/front/backoffice/auth/login.php" class="user-icon" title="Accéder au Back Office">
