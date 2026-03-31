@@ -27,37 +27,37 @@ RewriteRule ^logout/?$ /back/auth/logout.php [L,QSA]
 # ==============================================================================
 
 # 1. COMPRESSION GZIP (DEFLATE)
-# <IfModule mod_deflate.c>
-#     # Compresser le HTML, le texte, le CSS, le Javascript et les WebFonts
-#     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json font/woff2 font/woff
-#     
-#     # Ne pas compresser les images (elles le sont déjà, ça gaspillerait du CPU)
-#     SetEnvIfNoCase Request_URI "\.(?:gif|jpe?g|png|webp|avif)$" no-gzip dont-vary
-# </IfModule>
+<IfModule mod_deflate.c>
+    # Compresser le HTML, le texte, le CSS, le Javascript et les WebFonts
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json font/woff2 font/woff
+    
+    # Ne pas compresser les images (elles le sont déjà, ça gaspillerait du CPU)
+    SetEnvIfNoCase Request_URI "\.(?:gif|jpe?g|png|webp|avif)$" no-gzip dont-vary
+</IfModule>
 
 # 2. MISE EN CACHE NAVIGATEUR (EXPIRES & HEADERS)
-# <IfModule mod_expires.c>
-#     ExpiresActive On
-#     
-#     # Par défaut, pas de cache (0 secondes) pour le HTML/PHP afin d'avoir les actus en temps réel
-#     ExpiresDefault "access plus 0 seconds"
-#     
-#     # Mettre en cache les images pour 1 an (uploads et assets)
-#     ExpiresByType image/jpeg "access plus 1 year"
-#     ExpiresByType image/png "access plus 1 year"
-#     ExpiresByType image/gif "access plus 1 year"
-#     ExpiresByType image/webp "access plus 1 year"
-#     ExpiresByType image/svg+xml "access plus 1 year"
-#     
-#     # Mettre en cache les CSS et JS pour 1 mois
-#     ExpiresByType text/css "access plus 1 month"
-#     ExpiresByType application/javascript "access plus 1 month"
-#     ExpiresByType text/javascript "access plus 1 month"
-# </IfModule>
-# 
-# <IfModule mod_headers.c>
-#     # Forcer l'utilisation du cache public pour les fichiers statiques
-#     <FilesMatch "\.(jpeg|jpg|png|gif|webp|svg|css|js|woff2|woff)$">
-#         Header set Cache-Control "public, immutable"
-#     </FilesMatch>
-# </IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Par défaut, pas de cache (0 secondes) pour le HTML/PHP afin d'avoir les actus en temps réel
+    ExpiresDefault "access plus 0 seconds"
+    
+    # Mettre en cache les images pour 1 an (uploads et assets)
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    
+    # Mettre en cache les CSS et JS pour 1 mois
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Forcer l'utilisation du cache public pour les fichiers statiques
+    <FilesMatch "\.(jpeg|jpg|png|gif|webp|svg|css|js|woff2|woff)$">
+        Header set Cache-Control "public, immutable"
+    </FilesMatch>
+</IfModule>

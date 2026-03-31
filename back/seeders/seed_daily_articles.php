@@ -78,11 +78,7 @@ for ($d = 0; $d < $daysToSeed; $d++) {
         $title = $faker->realText(rand(40, 70));
         $title = rtrim($title, ".");
         
-        $coverPath = null;
-        if (rand(1, 100) <= ($withCoverProbability * 100)) {
-            $coverName = "seeded_cover_" . uniqid() . ".jpg";
-            $coverPath = "uploads/" . $coverName;
-        }
+        $coverPath = "public/assets/img/newspaper.jpg";
         
         $content = generateFrenchContent($faker);
         

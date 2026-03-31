@@ -65,7 +65,6 @@ CREATE TABLE article(
     author INTEGER,
    PRIMARY KEY(id),
    UNIQUE(url),
-    UNIQUE(cover),
     FOREIGN KEY(author) REFERENCES users(id) ON DELETE SET NULL
 );
 
