@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../back/util/minify.php';
     $username = "admin";
     $password = "qaws1209edrf34tgyhuj";
     $error = $_GET['error'] ?? '';
