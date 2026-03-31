@@ -2,6 +2,11 @@
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../db/Connection.php';
 
+if ($auth->isLoggedIn()) {
+    header('Location: /front/backoffice/index.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /front/backoffice/auth/login.php');
     exit;
@@ -13,7 +18,8 @@ $password = isset($_POST['password']) ? $_POST['password'] : '';
 $error = '';
 
 try {
-    $auth->loginWithUsername($username, $password);
+    $rememberDuration = (int) (60 * 3); // 3 minutes
+    $auth->loginWithUsername($username, $password, $rememberDuration);
     header('Location: /front/backoffice/index.php');
     exit;
 } catch (\Delight\Auth\UnknownUsernameException $e) {

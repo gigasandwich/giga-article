@@ -3,6 +3,8 @@ DROP DATABASE IF EXISTS giga_article;
 CREATE DATABASE giga_article;
 \c giga_article;
 
+-- Just check vendor/delight-im/auth/Database/PostgreSQL.sql for the user related tables
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(249) NOT NULL UNIQUE,
@@ -41,6 +43,16 @@ CREATE TABLE users_2fa (
     seed VARCHAR(255) NOT NULL,
     expires_at BIGINT NOT NULL DEFAULT 0
 );
+
+CREATE TABLE "users_remembered" (
+	"id" BIGSERIAL PRIMARY KEY,
+	"user" INTEGER NOT NULL CHECK ("user" >= 0),
+	"selector" VARCHAR(24) UNIQUE NOT NULL COLLATE "C",
+	"token" VARCHAR(255) NOT NULL COLLATE "C",
+	"expires" INTEGER NOT NULL CHECK ("expires" >= 0)
+);
+CREATE INDEX "users_remembered_user_ix" ON "users_remembered" ("user");
+
 
 CREATE TABLE article(
    id SERIAL,
