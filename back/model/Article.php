@@ -7,8 +7,9 @@ class Article {
     private $content = null;
     private $createdAt = null;
     private $deletedAt = null;
+    private $authorId = null;
 
-    public function __construct($id, $title, $url, $cover, $content, $date, $deletedAt = null) {
+    public function __construct($id, $title, $url, $cover, $content, $date, $deletedAt = null, $authorId = null) {
         try {
             $this->setId($id);
             $this->setTitle($title);
@@ -17,6 +18,7 @@ class Article {
             $this->setContent($content);
             $this->setCreatedAt($date);
             $this->setDeletedAt($deletedAt);
+            $this->setAuthorId($authorId);
         } catch (InvalidArgumentException $e) {
             // Handle the exception as needed, e.g., log it or rethrow
             throw $e;
@@ -50,6 +52,10 @@ class Article {
 
     public function getDeletedAt() {
         return $this->deletedAt;
+    }
+
+    public function getAuthorId() {
+        return $this->authorId;
     }
 
     public function isDeleted() {
@@ -105,6 +111,13 @@ class Article {
         $this->deletedAt = $deletedAt;
     }
 
+    public function setAuthorId($authorId) {
+        if ($authorId !== null && (!is_int($authorId) || $authorId <= 0)) {
+            throw new InvalidArgumentException("Author ID must be a positive integer or null.");
+        }
+        $this->authorId = $authorId;
+    }
+
     // Fonctions
     public static function getAll(PDO $pdo, $dateStart = null, $dateEnd = null) {
         try {
@@ -132,7 +145,7 @@ class Article {
             $stmt->execute();
             $articles = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
+                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at'], $row['author'] ?? null);
             }
             return $articles;
         } catch (PDOException $e) {
@@ -148,7 +161,7 @@ class Article {
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
+                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at'], $row['author'] ?? null);
             }
             return null;
         } catch (PDOException $e) {
@@ -186,12 +199,17 @@ class Article {
 
     public function saveArticle(PDO $pdo) {
         try {
-            $stmt = $pdo->prepare("INSERT INTO article (title, url, cover, content, created_at) VALUES (:title, :url, :cover, :content, :created_at)");
+            $stmt = $pdo->prepare("INSERT INTO article (title, url, cover, content, created_at, author) VALUES (:title, :url, :cover, :content, :created_at, :author)");
             $stmt->bindValue(':title', $this->getTitle());
             $stmt->bindValue(':url', $this->getUrl());
             $stmt->bindValue(':cover', $this->getCover());
             $stmt->bindValue(':content', $this->getContent());
             $stmt->bindValue(':created_at', $this->getCreatedAt());
+            if ($this->getAuthorId() !== null) {
+                $stmt->bindValue(':author', $this->getAuthorId(), PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue(':author', null, PDO::PARAM_NULL);
+            }
             $stmt->execute();
             $this->setId((int)$pdo->lastInsertId());
 
@@ -226,12 +244,17 @@ class Article {
             $this->archive($pdo);
 
             // 2. Perform the update
-            $stmt = $pdo->prepare("UPDATE article SET title = :title, url = :url, cover = :cover, content = :content, created_at = :created_at WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE article SET title = :title, url = :url, cover = :cover, content = :content, created_at = :created_at, author = :author WHERE id = :id");
             $stmt->bindValue(':title', $this->getTitle());
             $stmt->bindValue(':url', $this->getUrl());
             $stmt->bindValue(':cover', $this->getCover());
             $stmt->bindValue(':content', $this->getContent());
             $stmt->bindValue(':created_at', $this->getCreatedAt());
+            if ($this->getAuthorId() !== null) {
+                $stmt->bindValue(':author', $this->getAuthorId(), PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue(':author', null, PDO::PARAM_NULL);
+            }
             $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
             $stmt->execute();
         } catch (PDOException $e) {
