@@ -74,5 +74,6 @@ CREATE TABLE article_historic (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     version INTEGER NOT NULL,
+    status TEXT DEFAULT 'Mis a jour',
     FOREIGN KEY(article_id) REFERENCES article(id) ON DELETE CASCADE
 );

@@ -138,6 +138,9 @@ class Article {
 
     public function delete(PDO $pdo) {
         try {
+            // Archive before marking as deleted
+            $this->archive($pdo, 'Supprimé');
+
             $stmt = $pdo->prepare("UPDATE article SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id");
             $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
             $stmt->execute();
@@ -153,6 +156,9 @@ class Article {
             $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
             $stmt->execute();
             $this->setDeletedAt(null);
+
+            // Archive the restoration
+            $this->archive($pdo, 'Restauré');
         } catch (PDOException $e) {
             throw new RuntimeException("Erreur lors de la restauration de l'article : " . $e->getMessage());
         }
@@ -211,7 +217,7 @@ class Article {
         }
     }
 
-    private function archive(PDO $pdo) {
+    private function archive(PDO $pdo, $status = 'Mis à jour') {
         // Get the current version count to determine next version number
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM article_historic WHERE article_id = :id");
         $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
@@ -225,8 +231,8 @@ class Article {
         $current = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($current) {
-            $stmt = $pdo->prepare("INSERT INTO article_historic (article_id, title, url, cover, content, created_at, version) 
-                                 VALUES (:article_id, :title, :url, :cover, :content, :created_at, :version)");
+            $stmt = $pdo->prepare("INSERT INTO article_historic (article_id, title, url, cover, content, created_at, version, status) 
+                                 VALUES (:article_id, :title, :url, :cover, :content, :created_at, :version, :status)");
             $stmt->bindValue(':article_id', $current['id'], PDO::PARAM_INT);
             $stmt->bindValue(':title', $current['title']);
             $stmt->bindValue(':url', $current['url']);
@@ -234,6 +240,7 @@ class Article {
             $stmt->bindValue(':content', $current['content']);
             $stmt->bindValue(':created_at', $current['created_at']);
             $stmt->bindValue(':version', $version, PDO::PARAM_INT);
+            $stmt->bindValue(':status', $status);
             $stmt->execute();
         }
     }

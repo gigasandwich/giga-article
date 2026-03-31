@@ -42,10 +42,13 @@ $history = Article::getHistory($pdo, $id);
             <div class="version-timeline">
                 <?php if (!empty($history)): ?>
                     <?php foreach ($history as $v): ?>
-                        <div class="version-node">
+                        <div class="version-node <?= isset($v['status']) && $v['status'] === 'Supprimé' ? 'is-deleted' : '' ?>">
                             <div class="node-marker"></div>
                             <div class="node-content">
                                 <span class="v-label">v<?= $v['version'] ?></span>
+                                <?php if (isset($v['status']) && $v['status'] !== 'Mis à jour'): ?>
+                                    <span class="v-status"><?= htmlspecialchars($v['status']) ?></span>
+                                <?php endif; ?>
                                 <time class="v-date"><?= date('d/m/Y H:i', strtotime($v['modified_at'] ?? $v['created_at'])) ?></time>
                                 <div class="v-title"><?= htmlspecialchars($v['title']) ?></div>
                             </div>
@@ -161,6 +164,29 @@ $history = Article::getHistory($pdo, $id);
             font-weight: bold;
             color: #007bff;
             font-size: 0.85rem;
+        }
+
+        .v-status {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: #e9ecef;
+            color: #495057;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .version-node.is-deleted .v-status {
+            background: #fff5f5;
+            color: #e03131;
+            border: 1px solid #ffc9c9;
+        }
+
+        .version-node.is-deleted .node-marker {
+            background: #fa5252;
+            box-shadow: 0 0 0 2px #fa5252;
         }
 
         .v-date {
