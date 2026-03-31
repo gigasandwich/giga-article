@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../back/util/minify.php';
+// require_once __DIR__ . '/../../../back/util/minify.php';
 require_once __DIR__ . '/../../../back/auth/check_auth.php';
 require_once __DIR__ . "/../../../back/model/Article.php";
 require_once __DIR__ . "/../../../back/db/Connection.php";
@@ -27,14 +27,14 @@ $history = Article::getHistory($pdo, $id);
     <title>Modifier l'article</title>
 
     <link rel="stylesheet" href="/public/assets/styles/style.css">
-    <link rel="stylesheet" href="/public/assets/styles/create-article.css">
+    <link rel="stylesheet" href="/public/assets/styles/article-dashboard.css">
 
     <script src="https://cdn.tiny.cloud/1/o9hrg0a9nx5b8gypfnqerbmac9utp40qhb4ttvgueyf1revd/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
 </head>
 <body>
     <?php include "../../component/header.php"; ?>
-    <main class="edit-container">
-        <aside class="version-sidebar">
+    <main class="article-dashboard">
+        <aside class="dashboard-sidebar">
             <h2>Historique</h2>
             <div class="version-timeline">
                 <?php if (!empty($history)): ?>
@@ -60,18 +60,17 @@ $history = Article::getHistory($pdo, $id);
             </div>
         </aside>
 
-        <section class="edit-form-section">
+        <section class="dashboard-form-section">
             <h1>Modifier l'article : <?= htmlspecialchars($article->getTitle()) ?></h1>
 
-            <form action="/back/controller/ArticleUpdateController.php" method="POST" enctype="multipart/form-data" id="article-form">
+            <form action="/back/controller/ArticleUpdateController.php" method="POST" enctype="multipart/form-data" id="article-form" class="dashboard-form">
                 <div id="message-container"></div>
                 <input type="hidden" name="id" value="<?= $article->getId() ?>">
                 <div class="article-header">
-                    <div id="cover" onclick="document.getElementById('cover-file').click()" style="background-image: url('/<?= htmlspecialchars($article->getCover()) ?>'); background-size: cover; background-position: center;">
+                    <div id="cover" onclick="document.getElementById('cover-file').click()" style="background-image: url('/<?= htmlspecialchars($article->getCover()) ?>');">
                         <input type="file" name="cover" id="cover-file" accept="image/*" style="display: none;">
-                        <div class="placeholder" style="<?= $article->getCover() ? 'display:none' : '' ?>">
+                        <div class="placeholder">
                             <span class="plus-icon">+</span>
-                            <span>Modifier la photo de couverture</span>
                         </div>
                     </div>
 
@@ -88,157 +87,18 @@ $history = Article::getHistory($pdo, $id);
                     </div>
                 </div>
 
-                <div>
+                <div class="content-wrapper">
                     <label for="content">Contenu</label>
                     <textarea name="content" id="content"><?= htmlspecialchars($article->getContent()) ?></textarea>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" id="submit-button">Enregistrer les modifications</button>
+                    <button type="submit" id="submit-button" class="btn-primary">Enregistrer les modifications</button>
                     <a href="/backoffice" class="btn-cancel">Annuler</a>
                 </div>
             </form>
         </section>
     </main>
-
-    <style>
-        .edit-container {
-            display: flex;
-            gap: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .version-sidebar {
-            flex: 0 0 280px;
-            border-right: 1px solid #eee;
-            padding-right: 20px;
-        }
-
-        .edit-form-section {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .version-timeline {
-            position: relative;
-            margin-top: 20px;
-            padding-left: 20px;
-        }
-
-        .version-timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 5px;
-            bottom: 5px;
-            width: 2px;
-            background: #e0e0e0;
-        }
-
-        .version-node {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
-        .node-marker {
-            position: absolute;
-            left: -24px;
-            top: 6px;
-            width: 10px;
-            height: 10px;
-            background: #007bff;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px #007bff;
-        }
-
-        .node-content {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .v-label {
-            font-weight: bold;
-            color: #007bff;
-            font-size: 0.85rem;
-        }
-
-        .v-status {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            font-weight: 800;
-            padding: 1px 4px;
-            border-radius: 3px;
-            background: #e9ecef;
-            color: #495057;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .version-node.is-deleted .v-status {
-            background: #fff5f5;
-            color: #e03131;
-            border: 1px solid #ffc9c9;
-        }
-
-        .version-node.is-deleted .node-marker {
-            background: #fa5252;
-            box-shadow: 0 0 0 2px #fa5252;
-        }
-
-        .version-node:hover {
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .v-date {
-            color: #666;
-            font-size: 0.8rem;
-        }
-
-        .v-title {
-            font-size: 0.9rem;
-            color: #333;
-            line-height: 1.3;
-            word-wrap: break-word;
-        }
-
-        .form-actions {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .btn-cancel {
-            color: #666;
-            text-decoration: none;
-        }
-
-        .btn-cancel:hover {
-            text-decoration: underline;
-        }
-
-        .no-history {
-            color: #999;
-            font-style: italic;
-        }
-
-        @media (max-width: 900px) {
-            .edit-container {
-                flex-direction: column-reverse;
-            }
-            .version-sidebar {
-                border-right: none;
-                border-top: 1px solid #eee;
-                padding-top: 20px;
-                flex: none;
-            }
-        }
-    </style>
 
     <script>
         const backUploadUrl = "/back/controller/PhotoUploadController.php";
@@ -327,7 +187,6 @@ $history = Article::getHistory($pdo, $id);
                     const coverDiv = document.getElementById('cover');
                     coverDiv.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
                     coverDiv.style.backgroundSize = 'cover';
-                    coverDiv.querySelector('.placeholder').style.display = 'none';
                 }
             };
         });
@@ -357,10 +216,8 @@ $history = Article::getHistory($pdo, $id);
                         if (data.cover) {
                             coverDiv.style.backgroundImage = `url('/${data.cover}')`;
                             coverDiv.style.backgroundSize = 'cover';
-                            coverDiv.querySelector('.placeholder').style.display = 'none';
                         } else {
                             coverDiv.style.backgroundImage = 'none';
-                            coverDiv.querySelector('.placeholder').style.display = 'flex';
                         }
                         
                         // Message informatif

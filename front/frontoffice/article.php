@@ -90,7 +90,7 @@ function getCleanArticleParts(string $html, string $coverUrl) {
 }
 
 // On passe maintenant l'URL de la cover en 2eme parametre !
-$parts = getCleanArticleParts($article->getContent(), $article->getCover()); 
+$parts = getCleanArticleParts($article->getContent(), $article->getCover() ?? ''); 
 
 // Formatage de la date à la francaise
 $dateObj = new DateTime($article->getCreatedAt());
