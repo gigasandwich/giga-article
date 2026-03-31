@@ -5,14 +5,14 @@ require_once __DIR__ . "/../../../back/db/Connection.php";
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
-    header("Location: ../index.php");
+    header("Location: /backoffice");
     exit();
 }
 
 $article = Article::getById($pdo, (int)$id);
 
 if (!$article) {
-    header("Location: ../index.php");
+    header("Location: /backoffice");
     exit();
 }
 

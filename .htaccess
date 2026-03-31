@@ -3,3 +3,19 @@ RewriteEngine On
 
 # Or ^article/.*/[^/]+_(\d+)\.html$
 RewriteRule ^article/.+_([0-9]+)\.html$ /front/frontoffice/article.php?id=$1 [L,QSA]
+
+# Frontoffice
+# Rule: / -> /front/frontoffice/index.php
+RewriteRule ^$ /front/frontoffice/index.php [L,QSA]
+
+# Backoffice
+# Backoffice Index
+RewriteRule ^backoffice(/index\.php)?/?$ /front/backoffice/index.php [L,QSA]
+
+# Backoffice - Articles
+RewriteRule ^backoffice/articles/create(\.php)?/?$ /front/backoffice/articles/create.php [L,QSA]
+RewriteRule ^backoffice/articles/edit/([0-9]+)/?$ /front/backoffice/articles/edit.php?id=$1 [L,QSA]
+
+# Auth
+RewriteRule ^login/?$ /front/backoffice/auth/login.php [L,QSA]
+RewriteRule ^logout/?$ /back/auth/logout.php [L,QSA]

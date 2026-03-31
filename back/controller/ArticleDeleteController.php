@@ -48,7 +48,7 @@ function handleDelete() {
             ]);
         } else {
             // Standard form submission
-            header("Location: /front/backoffice/index.php?success=" . urlencode($message));
+            header("Location: /backoffice?success=" . urlencode($message));
         }
     } catch (Exception $e) {
         $status = $e->getCode() !== 0 && is_int($e->getCode()) ? $e->getCode() : 500;
@@ -58,7 +58,7 @@ function handleDelete() {
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         } else {
-            header("Location: /front/backoffice/index.php?error=" . urlencode($e->getMessage()));
+            header("Location: /backoffice?error=" . urlencode($e->getMessage()));
         }
     }
 }
