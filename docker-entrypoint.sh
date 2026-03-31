@@ -13,7 +13,7 @@ fi
 
 # Wait for DB and run seed script if present
 SEED_AUTH=back/auth/seed.php
-SEED_ARTICLES=back/seeders/seed_articles_faker.php
+SEED_ARTICLES=back/seeders/seed_daily_articles.php
 
 if [ -f "$SEED_AUTH" ]; then
   echo "[entrypoint] found auth seed script: $SEED_AUTH — attempting to run"
