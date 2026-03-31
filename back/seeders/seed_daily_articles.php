@@ -20,7 +20,7 @@ if (!$pdo) {
 }
 
 // 3. Configuration
-$daysToSeed = 100;
+$daysToSeed = 50;
 $maxArticlesPerDay = 10;
 $withCoverProbability = 0.4; // 40% chance of having a cover
 
@@ -55,8 +55,8 @@ function generateFrenchContent($faker) {
 
 // 4. Generate articles with random day intervals
 $currentDate = new DateTime();
-// Go back ~300 days to allow for spacing
-$currentDate->modify("-300 days");
+// Go back ~500 days to allow for spacing
+$currentDate->modify("-50 days");
 
 for ($d = 0; $d < $daysToSeed; $d++) {
     // Randomize the interval (1 to 3 days between seeding days)
@@ -88,7 +88,7 @@ for ($d = 0; $d < $daysToSeed; $d++) {
         
         try {
             // Using ID 1 as placeholder, saveArticle will update it
-            $article = new Article(1, $title, '', $coverPath, $content, $createdAt);
+            $article = new Article(1, $title, '', $coverPath, $content, $createdAt, null, 1);
             
             // Save to DB
             $article->saveArticle($pdo);
