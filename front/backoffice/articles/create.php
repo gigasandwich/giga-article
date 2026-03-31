@@ -20,7 +20,9 @@ if (!isset($_SESSION['article'])) {
 
 </head>
 <body>
-    <h1>Creation d'article</h1>
+    <?php include "../../component/header.php"; ?>
+    <main style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+        <h1>Creation d'article</h1>
 
     <div>
         <div id="message-container"></div>
@@ -53,8 +55,9 @@ if (!isset($_SESSION['article'])) {
             </div>
 
             <button type="submit" id="submit-button">Creer l'article</button>
+            <a href="../index.php" style="margin-left: 10px; color: #666; text-decoration: none;">Annuler</a>
         </form>
-    </div>
+    </main>
 
     <script>
         const backUploadUrl = "/back/controller/PhotoUploadController.php";

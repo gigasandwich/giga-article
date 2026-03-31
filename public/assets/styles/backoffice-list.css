@@ -1,0 +1,87 @@
+.backoffice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.admin-article-list {
+    list-style: none;
+    padding: 0;
+}
+
+.admin-article-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+.admin-article-item .news-article {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.admin-article-item .news-content {
+    flex: 1;
+}
+
+.admin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 60px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white !important;
+    width: auto;
+    padding: 0 1.2rem;
+}
+
+.btn-edit {
+    background-color: #ffc107;
+    color: white !important;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white !important;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .admin-article-item .news-article {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .admin-actions {
+        flex-direction: row;
+        width: 100%;
+    }
+    .admin-actions .btn {
+        flex: 1;
+    }
+}
