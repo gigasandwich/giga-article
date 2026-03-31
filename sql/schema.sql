@@ -62,3 +62,16 @@ CREATE TABLE picture(
    UNIQUE(url),
    FOREIGN KEY(article_id) REFERENCES article(id)
 );
+
+CREATE TABLE article_historic (
+    id SERIAL PRIMARY KEY,
+    article_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    cover TEXT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version INTEGER NOT NULL,
+    FOREIGN KEY(article_id) REFERENCES article(id) ON DELETE CASCADE
+);

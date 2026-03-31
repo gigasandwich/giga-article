@@ -156,6 +156,63 @@ class Article {
         }
     } 
 
+    public function update(PDO $pdo) {
+        try {
+            // 1. Archive the current version before updating
+            $this->archive($pdo);
+
+            // 2. Perform the update
+            $stmt = $pdo->prepare("UPDATE article SET title = :title, url = :url, cover = :cover, content = :content, created_at = :created_at WHERE id = :id");
+            $stmt->bindValue(':title', $this->getTitle());
+            $stmt->bindValue(':url', $this->getUrl());
+            $stmt->bindValue(':cover', $this->getCover());
+            $stmt->bindValue(':content', $this->getContent());
+            $stmt->bindValue(':created_at', $this->getCreatedAt());
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new RuntimeException("Error updating article: " . $e->getMessage());
+        }
+    }
+
+    private function archive(PDO $pdo) {
+        // Get the current version count to determine next version number
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM article_historic WHERE article_id = :id");
+        $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+        $stmt->execute();
+        $version = (int)$stmt->fetchColumn() + 1;
+
+        // Fetch current data from main table
+        $stmt = $pdo->prepare("SELECT * FROM article WHERE id = :id");
+        $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+        $stmt->execute();
+        $current = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($current) {
+            $stmt = $pdo->prepare("INSERT INTO article_historic (article_id, title, url, cover, content, created_at, version) 
+                                 VALUES (:article_id, :title, :url, :cover, :content, :created_at, :version)");
+            $stmt->bindValue(':article_id', $current['id'], PDO::PARAM_INT);
+            $stmt->bindValue(':title', $current['title']);
+            $stmt->bindValue(':url', $current['url']);
+            $stmt->bindValue(':cover', $current['cover']);
+            $stmt->bindValue(':content', $current['content']);
+            $stmt->bindValue(':created_at', $current['created_at']);
+            $stmt->bindValue(':version', $version, PDO::PARAM_INT);
+            $stmt->execute();
+        }
+    }
+
+    public static function getHistory(PDO $pdo, int $articleId) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM article_historic WHERE article_id = :id ORDER BY version DESC");
+            $stmt->bindValue(':id', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
     public function getArticleImages($level) {
         // 1. Recreer la base du nom propre (titrePropre_datePropre)
         $titrePropre = preg_replace('/[^a-zA-Z0-9]/', '-', $this->getTitle());
