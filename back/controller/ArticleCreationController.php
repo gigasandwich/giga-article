@@ -18,6 +18,17 @@ function postArticle() {
         $title = isset($_POST['title']) ? trim($_POST['title']) : '';
         $date = isset($_POST['date']) ? trim($_POST['date']) : '';
         $content = isset($_POST['content']) ? trim($_POST['content']) : '';
+
+        // Only add current time if the selected date is today
+        $selectedDate = new DateTime($date);
+        $today = new DateTime('today');
+        
+        if ($selectedDate->format('Y-m-d') === $today->format('Y-m-d')) {
+            $currentDateTime = new DateTime();
+            $finalDateTime = $date . ' ' . $currentDateTime->format('H:i:s');
+        } else {
+            $finalDateTime = $date . ' 00:00:00';
+        }
         
         $coverPath = null;
         if (isset($_FILES['cover']) && $_FILES['cover']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -73,7 +84,7 @@ function postArticle() {
             throw new RuntimeException("Database connection failed", 500);
         }
 
-        $article = new Article(1, $title, '', $coverPath, $content, $date);
+        $article = new Article(1, $title, '', $coverPath, $content, $finalDateTime);
         $article->saveArticle($pdo);
         $article->createUrl();
         $article->saveUrl($pdo);
