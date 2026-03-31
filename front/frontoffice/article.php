@@ -10,7 +10,7 @@ if ($articleId <= 0) {
 
 // 2. Recuperation de l'article depuis la base de donnees
 $article = Article::getById($pdo, $articleId);
-if (!$article) {
+if (!$article || $article->isDeleted()) {
     die("<h1>404 - Article introuvable</h1>");
 }
 

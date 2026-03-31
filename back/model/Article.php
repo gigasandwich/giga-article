@@ -6,8 +6,9 @@ class Article {
     private $cover = null;
     private $content = null;
     private $createdAt = null;
+    private $deletedAt = null;
 
-    public function __construct($id, $title, $url, $cover, $content, $date) {
+    public function __construct($id, $title, $url, $cover, $content, $date, $deletedAt = null) {
         try {
             $this->setId($id);
             $this->setTitle($title);
@@ -15,6 +16,7 @@ class Article {
             $this->setCover($cover);
             $this->setContent($content);
             $this->setCreatedAt($date);
+            $this->setDeletedAt($deletedAt);
         } catch (InvalidArgumentException $e) {
             // Handle the exception as needed, e.g., log it or rethrow
             throw $e;
@@ -44,6 +46,14 @@ class Article {
 
     public function getCreatedAt() {
         return $this->createdAt;
+    }
+
+    public function getDeletedAt() {
+        return $this->deletedAt;
+    }
+
+    public function isDeleted() {
+        return $this->deletedAt !== null;
     }
 
     // setters
@@ -91,17 +101,21 @@ class Article {
         $this->createdAt = $createdAt;
     }
 
+    public function setDeletedAt($deletedAt) {
+        $this->deletedAt = $deletedAt;
+    }
+
     // Fonctions
     public static function getAll(PDO $pdo) {
         try {
-            $stmt = $pdo->query("SELECT * FROM article");
+            $stmt = $pdo->query("SELECT * FROM article ORDER BY created_at DESC");
             $articles = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
+                $articles[] = new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
             }
             return $articles;
         } catch (PDOException $e) {
-            echo "Error fetching articles: " . $e->getMessage();
+            echo "Erreur lors de la récupération des articles : " . $e->getMessage();
             return [];
         }
     }
@@ -113,12 +127,39 @@ class Article {
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at']);
+                return new Article($row['id'], $row['title'], $row['url'], $row['cover'], $row['content'], $row['created_at'], $row['deleted_at']);
             }
             return null;
         } catch (PDOException $e) {
-            echo "Error fetching article by ID: " . $e->getMessage();
+            echo "Erreur lors de la récupération de l'article par ID : " . $e->getMessage();
             return null;
+        }
+    }
+
+    public function delete(PDO $pdo) {
+        try {
+            // Archive before marking as deleted
+            $this->archive($pdo, 'Supprimé');
+
+            $stmt = $pdo->prepare("UPDATE article SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id");
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+            $this->setDeletedAt(date('Y-m-d H:i:s'));
+        } catch (PDOException $e) {
+            throw new RuntimeException("Erreur lors de la suppression de l'article : " . $e->getMessage());
+        }
+    }
+
+    public function restore(PDO $pdo) {
+        try {
+            $stmt = $pdo->prepare("UPDATE article SET deleted_at = NULL WHERE id = :id");
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+            $this->setDeletedAt(null);
+
+            $this->archive($pdo, 'Restauré');
+        } catch (PDOException $e) {
+            throw new RuntimeException("Erreur lors de la restauration de l'article : " . $e->getMessage());
         }
     }
 
@@ -132,6 +173,8 @@ class Article {
             $stmt->bindValue(':created_at', $this->getCreatedAt());
             $stmt->execute();
             $this->setId((int)$pdo->lastInsertId());
+
+            $this->archive($pdo, 'Créé');
         } catch (PDOException $e) {
             echo "Error saving article: " . $e->getMessage();
         }
@@ -155,6 +198,64 @@ class Article {
             echo "Error saving URL: " . $e->getMessage();
         }
     } 
+
+    public function update(PDO $pdo) {
+        try {
+            // 1. Archive the current version before updating
+            $this->archive($pdo);
+
+            // 2. Perform the update
+            $stmt = $pdo->prepare("UPDATE article SET title = :title, url = :url, cover = :cover, content = :content, created_at = :created_at WHERE id = :id");
+            $stmt->bindValue(':title', $this->getTitle());
+            $stmt->bindValue(':url', $this->getUrl());
+            $stmt->bindValue(':cover', $this->getCover());
+            $stmt->bindValue(':content', $this->getContent());
+            $stmt->bindValue(':created_at', $this->getCreatedAt());
+            $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new RuntimeException("Error updating article: " . $e->getMessage());
+        }
+    }
+
+    private function archive(PDO $pdo, $status = 'Mis à jour') {
+        // Get the current version count to determine next version number
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM article_historic WHERE article_id = :id");
+        $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+        $stmt->execute();
+        $version = (int)$stmt->fetchColumn() + 1;
+
+        // Fetch current data from main table
+        $stmt = $pdo->prepare("SELECT * FROM article WHERE id = :id");
+        $stmt->bindValue(':id', $this->getId(), PDO::PARAM_INT);
+        $stmt->execute();
+        $current = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($current) {
+            $stmt = $pdo->prepare("INSERT INTO article_historic (article_id, title, url, cover, content, created_at, version, status) 
+                                 VALUES (:article_id, :title, :url, :cover, :content, :created_at, :version, :status)");
+            $stmt->bindValue(':article_id', $current['id'], PDO::PARAM_INT);
+            $stmt->bindValue(':title', $current['title']);
+            $stmt->bindValue(':url', $current['url']);
+            $stmt->bindValue(':cover', $current['cover']);
+            $stmt->bindValue(':content', $current['content']);
+            $stmt->bindValue(':created_at', $current['created_at']);
+            $stmt->bindValue(':version', $version, PDO::PARAM_INT);
+            $stmt->bindValue(':status', $status);
+            $stmt->execute();
+        }
+    }
+
+    public static function getHistory(PDO $pdo, int $articleId) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM article_historic WHERE article_id = :id ORDER BY version DESC");
+            $stmt->bindValue(':id', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 
     public function getArticleImages($level) {
         // 1. Recreer la base du nom propre (titrePropre_datePropre)

@@ -178,6 +178,14 @@
         </div>
     </div>
 </header>
+
+<?php 
+// Check if the current page is an index.php (Front office or Back office)
+$current_page = basename($_SERVER['PHP_SELF']);
+$is_list_page = ($current_page === 'index.php');
+?>
+
+<?php if ($is_list_page): ?>
 <div class="filter-bar">
     <div class="filter-container">
         <span class="filter-label">Voir les informations datant:</span>
@@ -209,3 +217,4 @@
         </script>
     </div>
 </div>
+<?php endif; ?>
