@@ -31,7 +31,44 @@ function parse_excerpt_html(string $html): string {
     return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-$all_articles = Article::getAll($pdo);
+function parse_filter_datetime(?string $value): ?string {
+    if ($value === null || trim($value) === '') {
+        return null;
+    }
+
+    $date = DateTime::createFromFormat('Y-m-d\\TH:i', $value);
+    if ($date === false) {
+        return null;
+    }
+
+    return $date->format('Y-m-d H:i:s');
+}
+
+$range = $_GET['range'] ?? 'all';
+$dateStart = null;
+$dateEnd = null;
+$now = new DateTime();
+
+if ($range === 'today') {
+    $start = (clone $now)->setTime(0, 0, 0);
+    $end = (clone $now)->setTime(23, 59, 59);
+    $dateStart = $start->format('Y-m-d H:i:s');
+    $dateEnd = $end->format('Y-m-d H:i:s');
+} elseif ($range === 'manual') {
+    $dateStart = parse_filter_datetime($_GET['date_start'] ?? null);
+    $dateEnd = parse_filter_datetime($_GET['date_end'] ?? null);
+
+    if ($dateStart !== null && $dateEnd !== null && $dateStart > $dateEnd) {
+        $tmp = $dateStart;
+        $dateStart = $dateEnd;
+        $dateEnd = $tmp;
+    }
+} else {
+    // "Jusqu'a aujourd'hui": toutes les dates <= maintenant
+    $dateEnd = $now->format('Y-m-d H:i:s');
+}
+
+$all_articles = Article::getAll($pdo, $dateStart, $dateEnd);
 $articles = array_filter($all_articles, function($a) {
     return !$a->isDeleted();
 });
