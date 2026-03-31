@@ -60,8 +60,8 @@ function postArticle() {
                     // Update content with new path, but only inside img src
                     $escapedOldName = preg_quote($oldName, '/');
                     $content = preg_replace(
-                        '/(<img\b[^>]*\bsrc=["\"][^"\"]*)' . $escapedOldName . '([^"\"]*["\"][^>]*>)/i',
-                        '$1' . $newName . '$2',
+                        '/(<img\b[^>]*\bsrc=["\"])(?:[^"\"]*\/)?' . $escapedOldName . '(["\"][^>]*>)/i',
+                        '$1' . '/uploads/' . $newName . '$2',
                         $content
                     );
                     $finalPhotoPaths[] = 'uploads/' . $newName;
