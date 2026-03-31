@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../back/util/minify.php';
 session_start();
 if (!isset($_SESSION['article'])) {
     $_SESSION['article'] = [

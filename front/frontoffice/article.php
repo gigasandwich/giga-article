@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../../back/util/minify.php";
 require_once "../../back/model/Article.php";
 require_once "../../back/db/Connection.php";
 
