@@ -157,7 +157,6 @@ class Article {
             $stmt->execute();
             $this->setDeletedAt(null);
 
-            // Archive the restoration
             $this->archive($pdo, 'Restauré');
         } catch (PDOException $e) {
             throw new RuntimeException("Erreur lors de la restauration de l'article : " . $e->getMessage());
@@ -174,6 +173,8 @@ class Article {
             $stmt->bindValue(':created_at', $this->getCreatedAt());
             $stmt->execute();
             $this->setId((int)$pdo->lastInsertId());
+
+            $this->archive($pdo, 'Créé');
         } catch (PDOException $e) {
             echo "Error saving article: " . $e->getMessage();
         }
