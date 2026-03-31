@@ -95,13 +95,57 @@ $parts = getCleanArticleParts($article->getContent(), $article->getCover());
 $dateObj = new DateTime($article->getCreatedAt());
 $dateFormatee = $dateObj->format('d/m/Y à H:i');
 
+// Preparation de la description SEO (meta description)
+// On prend le chapeau s'il existe, sinon on prend un bout du texte brut (max 150 caracteres)
+$seoDescription = '';
+if (!empty($parts['chapeau'])) {
+    $seoDescription = strip_tags($parts['chapeau']);
+} else {
+    $seoDescription = strip_tags($parts['body']);
+}
+// Tronquer proprement à 150 caractères environ, pour la lisibilité de Google
+if (mb_strlen($seoDescription) > 150) {
+    $seoDescription = mb_substr($seoDescription, 0, 147) . '...';
+}
+
+// Preparation du chemin complet de l'image pour l'Open Graph
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$domain = $_SERVER['HTTP_HOST'];
+$fullCoverUrl = $article->getCover() ? $protocol . "://" . $domain . "/" . ltrim($article->getCover(), '/') : '';
+$fullArticleUrl = $protocol . "://" . $domain . $_SERVER['REQUEST_URI'];
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($article->getTitle()) ?> - L'Actualite Giga</title>
+    
+    <!-- 1. Balises Meta basiques dynamiques -->
+    <title><?= htmlspecialchars($article->getTitle(), ENT_QUOTES, 'UTF-8') ?> - GigaArticle</title>
+    <meta name="description" content="<?= htmlspecialchars($seoDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="author" content="La Rédaction GigaArticle">
+    <meta name="robots" content="index, follow"> <!-- Autorise explicitement l'indexation -->
+
+    <!-- 2. Balises Open Graph (Facebook, LinkedIn, Discord...) -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="<?= htmlspecialchars($article->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($seoDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:url" content="<?= htmlspecialchars($fullArticleUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:site_name" content="GigaArticle">
+    <meta property="article:published_time" content="<?= htmlspecialchars($dateObj->format('c'), ENT_QUOTES, 'UTF-8') ?>">
+    <?php if ($fullCoverUrl): ?>
+    <meta property="og:image" content="<?= htmlspecialchars($fullCoverUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image:alt" content="<?= htmlspecialchars(!empty($parts['coverAlt']) ? $parts['coverAlt'] : $article->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+    <?php endif; ?>
+
+    <!-- 3. Balises Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= htmlspecialchars($article->getTitle(), ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($seoDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <?php if ($fullCoverUrl): ?>
+    <meta name="twitter:image" content="<?= htmlspecialchars($fullCoverUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <?php endif; ?>
     
     <link rel="stylesheet" href="/public/assets/styles/style.css">
     
