@@ -1,4 +1,17 @@
 <?php
+// On démarre un tampon pour minifier le code HTML de sortie
+ob_start(function($buffer) {
+    if (trim($buffer) === '') return $buffer;
+    $search = [
+        '/\>[^\S ]+/s',     // enlever espace libre à droite des chevrons
+        '/[^\S ]+\</s',     // enlever espace libre à gauche des chevrons
+        '/(\s)+/s',         // réduire plusieurs espaces à un seul
+        '/<!--(.*?)-->/'    // enlever des commentaires HTML en douceur
+    ];
+    $replace = ['>', '<', '\\1', ''];
+    return preg_replace($search, $replace, $buffer);
+});
+
 require_once "../../back/model/Article.php";
 require_once "../../back/db/Connection.php";
 
